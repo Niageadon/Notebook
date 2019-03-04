@@ -1,14 +1,10 @@
 <template>
 
-    <v-container>
-      <h1> gg</h1>
-    </v-container>
-
 </template>
 
 <script>
   export default {
-    name: "StartPage"
+    name: "Auth"
   }
 </script>
 

@@ -4,7 +4,9 @@
     app
     >
       <h2> hey</h2>
-      <v-icon lock>  </v-icon>
+      <v-spacer/>
+
+      <v-icon > lock </v-icon> <span> Login </span>
     </v-toolbar>
   </div>
 </template>

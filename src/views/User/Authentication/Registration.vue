@@ -1,14 +1,12 @@
 <template>
+  <v-container>
 
-    <v-container>
-      <h1> gg</h1>
-    </v-container>
-
+  </v-container>
 </template>
 
 <script>
   export default {
-    name: "StartPage"
+    name: "Registration"
   }
 </script>
 
