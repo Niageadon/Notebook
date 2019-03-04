@@ -4,8 +4,11 @@
       <v-flex xs6 mt-5>
         <v-text-field
         v-model="userData.name"
-        v-validate="'required|max:10'"
+        v-validate="'required|max:10|min:3'"
+        :error-messages="errors.collect('name')"
         label="Name"
+        data-vv-name="name"
+        required
         >
 
         </v-text-field>
@@ -37,6 +40,18 @@
           password: '',
           id: '',
           accessLevel: 0
+        },
+
+        custom: {
+          name: {
+            required: () => 'Name can not be empty',
+            max: 'The name field may not be greater than 10 characters',
+            min: 'fff'
+            // custom messages
+          },
+          select: {
+            required: 'Select field is required'
+          }
         }
       }
     },
