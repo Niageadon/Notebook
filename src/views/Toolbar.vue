@@ -6,7 +6,8 @@
       <h2> hey</h2>
       <v-spacer/>
 
-      <v-icon > lock </v-icon> <span> Login </span>
+
+       <v-btn flat="" :to="'/Login'"> <v-icon > lock </v-icon> Login </v-btn>
     </v-toolbar>
   </div>
 </template>
@@ -18,5 +19,6 @@
 </script>
 
 <style scoped>
+
 
 </style>
