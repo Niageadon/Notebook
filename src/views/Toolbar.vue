@@ -3,6 +3,7 @@
     <v-toolbar
     app
     >
+      <v-icon @click="">toc</v-icon>
       <h2> hey</h2>
       <v-spacer/>
 

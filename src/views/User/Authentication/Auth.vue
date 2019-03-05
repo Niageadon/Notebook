@@ -1,25 +1,33 @@
 <template>
   <v-container>
-    <v-layout justify-space-around xs6>
+    <v-layout justify-center xs6>
       <v-flex xs6 mt-5>
         <v-text-field
-        v-model="userData.name"
-        v-validate="'required|max:10|min:3'"
-        :error-messages="errors.collect('name')"
-        label="Name"
-        data-vv-name="name"
-        required
+            prepend-icon="person"
+            v-model="userData.name"
+            v-validate="'required|max:10|min:3'"
+            :error-messages="errors.collect('login')"
+            label="Name"
+            data-vv-name="login"
+            required
         >
 
         </v-text-field>
 
         <v-text-field
-        v-model="userData.password"
+            prepend-icon="lock"
+            v-model="userData.password"
+            v-validate="'required|max:30|min:3'"
+            :error-messages="errors.collect('password')"
+            label="Password"
+            data-vv-name="password"
+            required
 
-        label="Password"
         >
 
         </v-text-field>
+
+        <v-btn><v-icon left>verified_user</v-icon> Login</v-btn>
       </v-flex>
     </v-layout>
   </v-container>
@@ -43,11 +51,14 @@
         },
 
         custom: {
-          name: {
-            required: () => 'Name can not be empty',
+          login: {
             max: 'The name field may not be greater than 10 characters',
             min: 'fff'
             // custom messages
+          },
+          password: {
+            max: 'The name field may not be greater than 10 characters',
+            min: 'fff'
           },
           select: {
             required: 'Select field is required'
