@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import StartPage from '../views/StartPage'
 import LoginScreen from '../views/User/Authentication/Auth'
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [
