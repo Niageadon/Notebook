@@ -27,7 +27,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" >Registration</v-btn>
+            <v-btn color="primary" :to="'/Registration'" >Registration</v-btn>
             <v-spacer></v-spacer>
             <v-btn color="primary" @click="onLogin()">Login</v-btn>
           </v-card-actions>
@@ -41,9 +41,9 @@
   export default {
     name: "Auth",
 
-
     data() {
       return{
+
         userData:{
           name: '',
           password: '',
@@ -60,20 +60,15 @@
           v => (v && v.length >= 6) || 'Минимальная длинна пароля: 6 символов'
         ],
 
-
       }
     },
 
     methods:{
       onLogin(){
-        console.log(this.userData.name);
-        console.log(this.userData.password)
-        if (this.$refs.form.validate()) {
-          this.snackbar = true
-        }
+
+    }
     }
 
-  }
   }
 </script>
 
