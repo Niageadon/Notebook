@@ -7,32 +7,29 @@
             <v-toolbar-title>Login </v-toolbar-title>
           </v-toolbar>
           <v-card-text>
-            <v-form>
+            <v-form validation>
               <v-text-field
                   prepend-icon="person"
                   v-model="userData.name"
-                  v-validate="'required|max:10|min:3'"
-                  :error-messages="errors.collect('login')"
+                  :rules="nameRules"
                   label="Name"
-                  data-vv-name="login"
-                  required
+
               ></v-text-field>
               <v-text-field
                   class="mt-2"
                   prepend-icon="lock"
                   v-model="userData.password"
-                  v-validate="'required|max:30|min:3'"
-                  :error-messages="errors.collect('password')"
+                  :rules="passwordRules"
                   label="Password"
-                  data-vv-name="password"
-                  required
+
+                  type="password"
               ></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary">Registration</v-btn>
+            <v-btn color="primary" >Registration</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary">Login</v-btn>
+            <v-btn color="primary" @click="onLogin()">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -44,9 +41,6 @@
   export default {
     name: "Auth",
 
-    $_veeValidate: {
-      validator: 'new'
-    },
 
     data() {
       return{
@@ -57,24 +51,29 @@
           accessLevel: 0
         },
 
-        custom: {
-          login: {
-            max: 'The name field may not be greater than 10 characters',
-            min: 'fff'
-            // custom messages
-          },
-          password: {
-            max: 'The name field may not be greater than 10 characters',
-            min: 'fff'
-          },
-          select: {
-            required: 'Select field is required'
-          }
-        }
+        nameRules: [
+          v => !!v || 'Введите логин',
+          v => (v && v.length <= 12) || 'Максимальная длинна пароля: 12 символов'
+        ],
+        passwordRules: [
+          v => !!v || 'Введите пароль',
+          v => (v && v.length >= 6) || 'Минимальная длинна пароля: 6 символов'
+        ],
+
+
       }
     },
 
+    methods:{
+      onLogin(){
+        console.log(this.userData.name);
+        console.log(this.userData.password)
+        if (this.$refs.form.validate()) {
+          this.snackbar = true
+        }
+    }
 
+  }
   }
 </script>
 
