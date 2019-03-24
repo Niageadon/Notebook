@@ -1,6 +1,6 @@
 <template>
   <v-app class="element">
-   <!-- <Drawer/>-->
+    <Drawer/>
     <Toolbar/>
 
 

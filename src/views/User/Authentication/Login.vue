@@ -4,7 +4,7 @@
       <v-flex md8 xs12>
         <v-card  class="elevation-12">
           <v-toolbar dark color="primary">
-            <v-toolbar-title>Login </v-toolbar-title>
+            <v-toolbar-title> Login </v-toolbar-title>
           </v-toolbar>
           <v-card-text>
             <v-form validation>

@@ -2,10 +2,12 @@
   <div>
     <v-toolbar
     app
+    fixed
+    absolute
+    clipped-left
     >
-      <v-btn small round=""><v-icon @click="">toc</v-icon> </v-btn>
+      <v-btn small round @click="changeDrawer"><v-icon >toc</v-icon> </v-btn>
       <h2> hey</h2>
-
 
       <v-spacer/>
        <v-btn flat="" :to="'/'"> <v-icon > home </v-icon> Home </v-btn>
@@ -15,8 +17,24 @@
 </template>
 
 <script>
+  import { mapMutations } from 'vuex';
   export default {
-    name: "Toolbar"
+    name: "Toolbar",
+
+    methods:{
+      ...mapMutations({
+        toggle: 'toggleDrawer'
+      }),
+
+      changeDrawer(){
+        this.$store.dispatch('setDrawer')
+      }
+    },
+
+    computed:{
+
+
+    },
   }
 </script>
 
