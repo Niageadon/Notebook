@@ -1,7 +1,9 @@
 <template>
   <div>
     <v-container fluid>
-      <v-card
+      <v-layout xs12 justify-center>
+        <v-flex xs12 md9>
+        <v-card
          class="elevation-13">
         <v-layout xs12 wrap row>
 
@@ -27,10 +29,9 @@
                     readonly
                     box
                     v-on="on"
-                    v-on:dblclick="dateMenu = false"
                 ></v-text-field>
               </template>
-              <v-date-picker v-model="newNote.date" no-title scrollable>
+              <v-date-picker  v-model="newNote.date" no-title scrollable>
                 <v-spacer></v-spacer>
                 <v-btn flat color="primary" @click="dateMenu = false">Cancel</v-btn>
                 <v-btn flat color="primary" @click="$refs.dateMenu.save(newNote.date)">Select</v-btn>
@@ -68,7 +69,9 @@
           </v-btn>
         </v-card-actions> <!--button-->
       </v-card>
-    </v-container>
+        </v-flex>
+      </v-layout>
+    </v-container> <!--New note-->
 
     <v-container >
       <v-layout wrap >
@@ -87,7 +90,7 @@
           </v-card>
         </v-flex>
       </v-layout>
-    </v-container>
+    </v-container> <!--Note's array-->
   </div>
 </template>
 
