@@ -26,8 +26,8 @@
         toggle: 'toggleDrawer'
       }),
 
-      changeDrawer(){
-        this.$store.dispatch('setDrawer')
+      changeDrawer(val){
+        this.$store.dispatch('setDrawer', val)
       }
     },
 

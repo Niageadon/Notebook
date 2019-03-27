@@ -3,8 +3,10 @@
     <v-navigation-drawer
         app
         fixed
+        disable-resize-watcher=""
         clipped
-        v-model="getDrawerState">
+        :value="getDrawerState">
+
 
       <v-switch py-1
                 :label="`Sorting`"
