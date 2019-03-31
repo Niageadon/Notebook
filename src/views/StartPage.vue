@@ -25,9 +25,8 @@
             <v-divider/>
             <v-form v-model="validateRules.valid">
 
-            <v-layout xs12 wrap row>
+            <v-layout xs12 wrap column>
 
-              <v-flex xs12>
                 <v-menu
                     ref="dateMenu"
                     v-model="newNote.dateMenu"
@@ -56,27 +55,22 @@
                     <v-btn flat color="primary" @click="newNote.dateMenu = false">Cancel</v-btn>
                     <v-btn flat color="primary" @click="$refs.dateMenu.save(newNote.date)">Select</v-btn>
                   </v-date-picker>
-                </v-menu>
-              </v-flex> <!--date-->
+                </v-menu><!--date-->
 
-              <v-flex xs12>
                 <v-text-field
                     label="Headline"
                     prepend-inner-icon="title"
                     box
                     v-model="newNote.title"
-                ></v-text-field>
-              </v-flex> <!--title-->
+                ></v-text-field><!--title-->
 
-              <v-flex xs12 >
                 <v-textarea
                     box
                     name="input-7-4"
                     label="Main text"
                     v-model="newNote.body"
                     :rules="validateRules.bodyRule"
-                ></v-textarea>
-              </v-flex> <!--body-->
+                ></v-textarea><!--body-->
 
 
           </v-layout>
@@ -126,6 +120,11 @@
               <v-card-title>hey</v-card-title>
               <v-divider/>
               <v-card-text>
+                <v-text-field
+                    label="Headline"
+                    prepend-inner-icon="title"
+                    v-model="editNote.title"
+                ></v-text-field>
                 <v-textarea v-model="editNote.body"></v-textarea>
               </v-card-text>
               <v-card-actions> <v-btn @click="toggleEditingStatus(note.id)">Save changing</v-btn> </v-card-actions>
@@ -207,7 +206,8 @@
           this.someShit[noteType].push(pushNote)
         }
         else {
-          this.someShit[noteType][duplicateId].body += pushNote.body
+          this.someShit[noteType][duplicateId].body += '    ' + pushNote.body;
+          this.someShit[noteType][duplicateId].title += '    ' + pushNote.title;
         }
         //this.notes.push(pushNote)
       },
@@ -215,7 +215,8 @@
       checkForDuplicate(noteType, date){
         let duplicate = false;
         let id = 0;
-         for (let i = 0; this.someShit[noteType].length < i; i++){
+        // console.log(this.someShit[noteType][0].date);
+         for (let i = 0; i < this.someShit[noteType].length; i++){
            if(date === this.someShit[noteType][i].date){
             duplicate = true;
             id = i;
@@ -246,8 +247,10 @@
           this.editNote.title =     this.someShit[this.showType][id].title;
           this.editNote.body =      this.someShit[this.showType][id].body;
         }
-        else {
-           this.editMode = false;
+        else if (this.someShit[this.showType][id].editing){
+          //if note are on edit mode (single note edit)
+          this.editMode = false;
+          this.someShit[this.showType][id].editing = false;
         }
       },
     },
