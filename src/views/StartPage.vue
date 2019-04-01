@@ -1,6 +1,5 @@
 <template>
   <div >
-    <v-textarea tabindex="-1" v-on:keydown.tab="doTabulation" v-model="test"></v-textarea>
 
     <v-container fluid>
       <v-layout xs12 justify-center>
@@ -66,6 +65,7 @@
                 ></v-text-field><!--title-->
 
                 <v-textarea
+                    v-on:keydown.tab="newNote.body = doTabulation(newNote.body,$event)"
                     box
                     name="input-7-4"
                     label="Main text"
@@ -85,7 +85,7 @@
                   @click="addNote"
                   color="primary">
               Publicate
-            </v-btn>
+              </v-btn>
             </v-flex> <!--button-->
           </v-layout>
         </v-card-actions> <!--button-->
@@ -149,7 +149,6 @@
 
     data(){
       return{
-        test: 'boba',
         showType: 'note',
         editMode: false,
         noteTypes: [
@@ -266,8 +265,9 @@
         }
       },
 
-      doTabulation(){
-        this.test += '/t' + 'hey'
+      doTabulation(text, event){
+        event.preventDefault(); // disable tabulation
+        return text + '\u0009'
       }
     },
 
