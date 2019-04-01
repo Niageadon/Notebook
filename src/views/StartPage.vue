@@ -84,7 +84,7 @@
                   :disabled="!validateRules.valid"
                   @click="addNote"
                   color="primary">
-              Publicate
+                  Publish
               </v-btn>
             </v-flex> <!--button-->
           </v-layout>
@@ -93,6 +93,8 @@
         </v-flex>
       </v-layout>
     </v-container> <!--New note-->
+
+
 
     <v-container  >
       <v-layout wrap justify-center>
@@ -106,8 +108,7 @@
               <v-textarea v-model="note.body"
                           readonly
                           flat
-                          hide-details
-                          height="300"
+                          auto-grow
               >
               </v-textarea>
             </v-card-text>
@@ -131,7 +132,9 @@
                     prepend-inner-icon="title"
                     v-model="editNote.title"
                 ></v-text-field>
-                <v-textarea v-model="editNote.body"></v-textarea>
+                <v-textarea
+                    v-on:keydown.tab="editNote.body = doTabulation(editNote.body,$event)"
+                    box v-model="editNote.body"></v-textarea>
               </v-card-text>
               <v-card-actions> <v-btn @click="toggleEditingStatus(note.id)">Save changing</v-btn> </v-card-actions>
             </v-card>
@@ -255,10 +258,10 @@
         }
         else if (this.someShit[this.showType][id].editing){
           //if note are on edit mode (single note edit)
-          /*let noteType =*///this.someShit[this.showType][id].date = this.editNote.noteType;
-          /*let date =*/this.someShit[this.showType][id].date =  this.editNote.date;
-          /*let title = */this.someShit[this.showType][id].title = this.editNote.title;
-          /*let body =*/this.someShit[this.showType][id].body = this.editNote.body;
+
+          this.someShit[this.showType][id].date   = this.editNote.date;
+          this.someShit[this.showType][id].title  = this.editNote.title;
+          this.someShit[this.showType][id].body   = this.editNote.body;
 
           this.editMode = false;
           this.someShit[this.showType][id].editing = false;
@@ -267,7 +270,7 @@
 
       doTabulation(text, event){
         event.preventDefault(); // disable tabulation
-        return text + '\u0009'
+        return text + '\u0009'  // add tab
       }
     },
 
