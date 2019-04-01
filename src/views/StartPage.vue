@@ -1,5 +1,7 @@
 <template>
-  <div>
+  <div >
+    <v-textarea tabindex="-1" v-on:keydown.tab="doTabulation" v-model="test"></v-textarea>
+
     <v-container fluid>
       <v-layout xs12 justify-center>
         <v-flex xs12 md7>
@@ -23,10 +25,9 @@
                 </v-layout>
             </v-card-title>
             <v-divider/>
+
             <v-form v-model="validateRules.valid">
-
             <v-layout xs12 wrap column>
-
                 <v-menu
                     ref="dateMenu"
                     v-model="newNote.dateMenu"
@@ -71,10 +72,9 @@
                     v-model="newNote.body"
                     :rules="validateRules.bodyRule"
                 ></v-textarea><!--body-->
+            </v-layout>
+            </v-form>
 
-
-          </v-layout>
-        </v-form>
         <v-card-actions >
           <v-layout xs12 wrap >
             <v-flex  align-self-end  xs12 >
@@ -102,8 +102,14 @@
             <v-card class="elevation-10">
             <v-card-title class="headline font-weight-bold">{{note.title}}</v-card-title>
             <v-divider></v-divider>
-            <v-card-text class="title">{{note.body}}
-
+            <v-card-text class="title">
+              <v-textarea v-model="note.body"
+                          readonly
+                          flat
+                          hide-details
+                          height="300"
+              >
+              </v-textarea>
             </v-card-text>
             <!--<v-responsive>
               <v-img  src="https://cdn.vuetifyjs.com/images/carousel/sky.jpg"> </v-img>
@@ -143,6 +149,7 @@
 
     data(){
       return{
+        test: 'boba',
         showType: 'note',
         editMode: false,
         noteTypes: [
@@ -206,8 +213,8 @@
           this.someShit[noteType].push(pushNote)
         }
         else {
-          this.someShit[noteType][duplicateId].body += '    ' + pushNote.body;
-          this.someShit[noteType][duplicateId].title += '    ' + pushNote.title;
+          this.someShit[noteType][duplicateId].body += '\n\n' + pushNote.body;
+          this.someShit[noteType][duplicateId].title += '   ' + pushNote.title;
         }
         //this.notes.push(pushNote)
       },
@@ -249,10 +256,19 @@
         }
         else if (this.someShit[this.showType][id].editing){
           //if note are on edit mode (single note edit)
+          /*let noteType =*///this.someShit[this.showType][id].date = this.editNote.noteType;
+          /*let date =*/this.someShit[this.showType][id].date =  this.editNote.date;
+          /*let title = */this.someShit[this.showType][id].title = this.editNote.title;
+          /*let body =*/this.someShit[this.showType][id].body = this.editNote.body;
+
           this.editMode = false;
           this.someShit[this.showType][id].editing = false;
         }
       },
+
+      doTabulation(){
+        this.test += '/t' + 'hey'
+      }
     },
 
     computed:{
