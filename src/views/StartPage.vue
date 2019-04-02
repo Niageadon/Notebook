@@ -19,7 +19,7 @@
                     ></v-select>
                   </v-flex> <!--note type-->
                   <v-flex xs6 md4 class="offset-md1 offset-xs0">
-                    <v-checkbox  label="#Important" v-model="newNote.isImportant"></v-checkbox>
+                    <v-checkbox  append-icon="warning"  label="#Important" v-model="newNote.isImportant"></v-checkbox>
                   </v-flex> <!--"Important" checkbox-->
                 </v-layout>
             </v-card-title>
@@ -85,6 +85,7 @@
                   @click="addNote"
                   color="primary">
                   Publish
+                <v-icon class="ml-2">cloud_download</v-icon>
               </v-btn>
             </v-flex> <!--button-->
           </v-layout>
@@ -98,7 +99,7 @@
 
     <v-container  >
       <v-layout wrap justify-center>
-        <v-flex  mt-4 pb-4 xs12 md11 v-for="note in someShit[showType]" :key="note.id">
+        <v-flex  mt-4 pb-4 xs12 md11 v-for="note in someShit[showType]" :key="note.date">
           <div v-if="!someShit[showType][note.id].editing">
             <div style="text-align: center" class="font-weight-black display-1 font-italic">{{note.date}}</div>
             <v-card class="elevation-10">
@@ -215,8 +216,16 @@
           this.someShit[noteType].push(pushNote)
         }
         else {
+          // add body
           this.someShit[noteType][duplicateId].body += '\n\n' + pushNote.body;
-          this.someShit[noteType][duplicateId].title += '   ' + pushNote.title;
+
+          // add title
+          if(this.someShit[noteType][duplicateId].title === ''){
+            this.someShit[noteType][duplicateId].title = pushNote.title;
+          }
+          else if (!(pushNote.title === '')){this.someShit[noteType][duplicateId].title += '\u0009' + '&' + '\u0009' + pushNote.title;
+          }
+
         }
         //this.notes.push(pushNote)
       },
