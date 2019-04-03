@@ -1,17 +1,19 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-
-Vue.use(Vuex);
-
-export default new Vuex.Store({
+export default {
   state: {
     drawer: false,
-
   },
+
   mutations: {
     toggleDrawer(state){
       state.drawer = !state.drawer;
     }
+  },
+
+  getters: {
+    DRAWER: state =>{
+      return state.drawer
+    }
+
   },
 
   actions: {
@@ -19,4 +21,4 @@ export default new Vuex.Store({
       state.commit('toggleDrawer')
     }
   }
-})
+}

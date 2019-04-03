@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import './plugins/vuetify'
 import App from './App.vue'
-import store from './plugins/store'
+import store from './storage'
 import router from './plugins/router'
 import VeeValidate from 'vee-validate';
 

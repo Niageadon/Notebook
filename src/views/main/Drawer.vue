@@ -32,7 +32,9 @@
 
     computed:{
       getDrawerState(){
-        return this.$store.state.drawer
+        //console.log(this.$store.state.drawer)
+        //return this.$store.state.drawer
+        return this.$store.getters.DRAWER
       }
 
     },

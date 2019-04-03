@@ -14,8 +14,8 @@
   // @ is an alias to /src
 
 
-  import Drawer from "@/views/Drawer";
-  import Toolbar from "@/views/Toolbar";
+  import Drawer from "@/views/main/Drawer";
+  import Toolbar from "@/views/main/Toolbar";
   export default {
     name: 'home',
     components: {

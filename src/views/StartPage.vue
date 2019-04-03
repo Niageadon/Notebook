@@ -95,12 +95,10 @@
       </v-layout>
     </v-container> <!--New note-->
 
-
-
     <v-container  >
       <v-layout wrap justify-center>
-        <v-flex  mt-4 pb-4 xs12 md11 v-for="note in someShit[showType]" :key="note.date">
-          <div v-if="!someShit[showType][note.id].editing">
+        <v-flex mt-4 pb-4 xs12 md11 v-for="note in records[showType]" :key="note.date">
+          <div v-if="!records[showType][note.id].editing">
             <div style="text-align: center" class="font-weight-black display-1 font-italic">{{note.date}}</div>
             <v-card class="elevation-10">
             <v-card-title class="headline font-weight-bold">{{note.title}}</v-card-title>
@@ -184,7 +182,7 @@
           body: '',
         },
 
-        someShit:{
+        records:{
           note:[],
           task:[],
           reminder:[],
@@ -199,7 +197,7 @@
       addNote(){
         //this.notes.push(this.newNote.note)
         let noteType = this.newNote.noteType.toLowerCase();
-        this.newNote.id = this.someShit[noteType].length;
+        this.newNote.id = this.records[noteType].length;
 
         let pushNote = {
           id:           this.newNote.id,
@@ -213,17 +211,17 @@
 
         if (duplicateId === -1) {
           //no duplicates
-          this.someShit[noteType].push(pushNote)
+          this.records[noteType].push(pushNote)
         }
         else {
           // add body
-          this.someShit[noteType][duplicateId].body += '\n\n' + pushNote.body;
+          this.records[noteType][duplicateId].body += '\n\n' + pushNote.body;
 
           // add title
-          if(this.someShit[noteType][duplicateId].title === ''){
-            this.someShit[noteType][duplicateId].title = pushNote.title;
+          if(this.records[noteType][duplicateId].title === ''){
+            this.records[noteType][duplicateId].title = pushNote.title;
           }
-          else if (!(pushNote.title === '')){this.someShit[noteType][duplicateId].title += '\u0009' + '&' + '\u0009' + pushNote.title;
+          else if (!(pushNote.title === '')){this.records[noteType][duplicateId].title += '\u0009' + '&' + '\u0009' + pushNote.title;
           }
 
         }
@@ -233,9 +231,9 @@
       checkForDuplicate(noteType, date){
         let duplicate = false;
         let id = 0;
-        // console.log(this.someShit[noteType][0].date);
-         for (let i = 0; i < this.someShit[noteType].length; i++){
-           if(date === this.someShit[noteType][i].date){
+        // console.log(this.records[noteType][0].date);
+         for (let i = 0; i < this.records[noteType].length; i++){
+           if(date === this.records[noteType][i].date){
             duplicate = true;
             id = i;
           }
@@ -258,22 +256,22 @@
       toggleEditingStatus(id){
         if (!this.editMode) {
           this.editMode = true;
-          this.someShit[this.showType][id].editing = true;
+          this.records[this.showType][id].editing = true;
 
           this.editNote.noteType =  this.showType;
-          this.editNote.date =      this.someShit[this.showType][id].date;
-          this.editNote.title =     this.someShit[this.showType][id].title;
-          this.editNote.body =      this.someShit[this.showType][id].body;
+          this.editNote.date =      this.records[this.showType][id].date;
+          this.editNote.title =     this.records[this.showType][id].title;
+          this.editNote.body =      this.records[this.showType][id].body;
         }
-        else if (this.someShit[this.showType][id].editing){
+        else if (this.records[this.showType][id].editing){
           //if note are on edit mode (single note edit)
 
-          this.someShit[this.showType][id].date   = this.editNote.date;
-          this.someShit[this.showType][id].title  = this.editNote.title;
-          this.someShit[this.showType][id].body   = this.editNote.body;
+          this.records[this.showType][id].date   = this.editNote.date;
+          this.records[this.showType][id].title  = this.editNote.title;
+          this.records[this.showType][id].body   = this.editNote.body;
 
           this.editMode = false;
-          this.someShit[this.showType][id].editing = false;
+          this.records[this.showType][id].editing = false;
         }
       },
 
@@ -289,7 +287,7 @@
 
     created(){
       this.newNote.date = this.getCurrentDate(); //get date for auto-write to v-date field
-
+      this.$store.getters.checkRecordsDuplicate('note', '1')
     }
   }
 </script>
@@ -299,3 +297,5 @@
 
 
 </style>
+
+
