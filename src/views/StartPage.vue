@@ -1,32 +1,34 @@
 <template>
   <div >
+    <v-btn @click="saveNotes"> Send to locale storage</v-btn>
+    <v-btn @click="sortNotes"> Sort notes</v-btn>
 
     <v-container fluid>
       <v-layout xs12 justify-center>
         <v-flex xs12 md7>
           <v-card class="elevation-13">
             <v-card-title>
-                <v-layout wrap>
-                  <v-flex  xs6 md4 >
-                    <v-select
-                        v-model="newNote.noteType"
-                        :items="noteTypes"
-                        item-text="state"
-                        item-value="abbr"
-                        label="Select"
-                        persistent-hint
-                        single-line
-                    ></v-select>
-                  </v-flex> <!--note type-->
-                  <v-flex xs6 md4 class="offset-md1 offset-xs0">
-                    <v-checkbox  append-icon="warning"  label="#Important" v-model="newNote.isImportant"></v-checkbox>
-                  </v-flex> <!--"Important" checkbox-->
-                </v-layout>
+              <v-layout wrap>
+                <v-flex  xs6 md4 >
+                  <v-select
+                      v-model="newNote.noteType"
+                      :items="noteTypes"
+                      item-text="state"
+                      item-value="abbr"
+                      label="Select"
+                      persistent-hint
+                      single-line
+                  ></v-select>
+                </v-flex> <!--note type-->
+                <v-flex xs6 md4 class="offset-md1 offset-xs0">
+                  <v-checkbox  append-icon="warning"  label="#Important" v-model="newNote.isImportant"></v-checkbox>
+                </v-flex> <!--"Important" checkbox-->
+              </v-layout>
             </v-card-title>
             <v-divider/>
 
             <v-form v-model="validateRules.valid">
-            <v-layout xs12 wrap column>
+              <v-layout xs12 wrap column>
                 <v-menu
                     ref="dateMenu"
                     v-model="newNote.dateMenu"
@@ -72,25 +74,25 @@
                     v-model="newNote.body"
                     :rules="validateRules.bodyRule"
                 ></v-textarea><!--body-->
-            </v-layout>
+              </v-layout>
             </v-form>
 
-        <v-card-actions >
-          <v-layout xs12 wrap >
-            <v-flex  align-self-end  xs12 >
-              <v-btn
-                  large
-                  block
-                  :disabled="!validateRules.valid"
-                  @click="addNote"
-                  color="primary">
-                  Publish
-                <v-icon class="ml-2">cloud_download</v-icon>
-              </v-btn>
-            </v-flex> <!--button-->
-          </v-layout>
-        </v-card-actions> <!--button-->
-      </v-card>
+            <v-card-actions >
+              <v-layout xs12 wrap >
+                <v-flex  align-self-end  xs12 >
+                  <v-btn
+                      large
+                      block
+                      :disabled="!validateRules.valid"
+                      @click="addNote"
+                      color="primary">
+                    Publish
+                    <v-icon class="ml-2">cloud_download</v-icon>
+                  </v-btn>
+                </v-flex> <!--button-->
+              </v-layout>
+            </v-card-actions> <!--button-->
+          </v-card>
         </v-flex>
       </v-layout>
     </v-container> <!--New note-->
@@ -101,23 +103,23 @@
           <div v-if="!records[showType][note.id].editing">
             <div style="text-align: center" class="font-weight-black display-1 font-italic">{{note.date}}</div>
             <v-card class="elevation-10">
-            <v-card-title class="headline font-weight-bold">{{note.title}}</v-card-title>
-            <v-divider></v-divider>
-            <v-card-text class="title">
-              <v-textarea v-model="note.body"
-                          readonly
-                          flat
-                          auto-grow
-              >
-              </v-textarea>
-            </v-card-text>
-            <!--<v-responsive>
-              <v-img  src="https://cdn.vuetifyjs.com/images/carousel/sky.jpg"> </v-img>
-            </v-responsive>-->
-            <v-card-actions>
-              <v-btn @click="toggleEditingStatus(note.id)">Редактировать запись</v-btn>
-            </v-card-actions>
-          </v-card>
+              <v-card-title class="headline font-weight-bold">{{note.title}}</v-card-title>
+              <v-divider></v-divider>
+              <v-card-text class="title">
+                <v-textarea v-model="note.body"
+                            readonly
+                            flat
+                            auto-grow
+                >
+                </v-textarea>
+              </v-card-text>
+              <!--<v-responsive>
+                <v-img  src="https://cdn.vuetifyjs.com/images/carousel/sky.jpg"> </v-img>
+              </v-responsive>-->
+              <v-card-actions>
+                <v-btn @click="toggleEditingStatus(note.id)">Редактировать запись</v-btn>
+              </v-card-actions>
+            </v-card>
           </div>
 
           <div v-else>
@@ -146,6 +148,7 @@
 </template>
 
 <script>
+
   export default {
     name: "StartPage",
 
@@ -207,8 +210,9 @@
           body:         this.newNote.body,
           editing:      this.newNote.editing,
         };
-        let duplicateId = this.checkForDuplicate(noteType, pushNote.date);
 
+        let duplicateId = this.checkForDuplicate(noteType, pushNote.date);
+        console.log(duplicateId)
         if (duplicateId === -1) {
           //no duplicates
           this.records[noteType].push(pushNote)
@@ -232,26 +236,25 @@
         let duplicate = false;
         let id = 0;
         // console.log(this.records[noteType][0].date);
-         for (let i = 0; i < this.records[noteType].length; i++){
-           if(date === this.records[noteType][i].date){
+        for (let i = 0; i < this.records[noteType].length; i++){
+          if(date === this.records[noteType][i].date){
             duplicate = true;
             id = i;
           }
         }
-         return duplicate? id : -1
+        return duplicate? id : -1
       },
 
       getCurrentDate(){
         // auto select current date
         let currentDate = new Date;
-          let year = currentDate.getFullYear();
-          let day = currentDate.getDate();
-            day = (day.toString().length === 1)? '0' + day : day;
-          let month = currentDate.getMonth() + 1;
-            month = (month.toString().length === 1)? '0' + month : month;
+        let year = currentDate.getFullYear();
+        let day = currentDate.getDate();
+        day = (day.toString().length === 1)? '0' + day : day;
+        let month = currentDate.getMonth() + 1;
+        month = (month.toString().length === 1)? '0' + month : month;
         return(year + '-' + month + '-' + day )
       },
-
 
       toggleEditingStatus(id){
         if (!this.editMode) {
@@ -278,16 +281,43 @@
       doTabulation(text, event){
         event.preventDefault(); // disable tabulation
         return text + '\u0009'  // add tab
+      },
+
+      saveNotes() {
+        const parsed = JSON.stringify(this.records);
+        localStorage.setItem('records', parsed);
+      },
+
+      sortNotes(){
+        this.records.note = this.records.note.sort(
+          function compareAge(noteA, noteB) {
+            let a = noteA.date.slice(0, 4) + noteA.date.slice(5, 7) + noteA.date.slice(8, 10);
+            let b = noteB.date.slice(0, 4) + noteB.date.slice(5, 7) + noteB.date.slice(8, 10);
+            return b - a;
+          });
+        console.log('sorted')
       }
+
     },
 
     computed:{
 
     },
 
-    created(){
+    mounted(){
       this.newNote.date = this.getCurrentDate(); //get date for auto-write to v-date field
-      this.$store.getters.checkRecordsDuplicate('note', '1')
+
+      if (localStorage.getItem('records')) {
+        try {
+          this.records = JSON.parse(localStorage.getItem('records'));
+        } catch(e) {
+          localStorage.removeItem('records');
+        }
+      }
+    },
+
+    watch: {
+
     }
   }
 </script>

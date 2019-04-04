@@ -22,6 +22,16 @@
       Toolbar,
       Drawer
 
+    },
+
+    date(){
+      return{
+
+      }
+    },
+
+    created(){
+
     }
   }
 </script>

@@ -10,7 +10,7 @@
             <v-form v-model="valid" ref="form" lazy-validation>
               <v-text-field
                   prepend-icon="person"
-                  v-model="userData.name"
+                  v-model="userData.email"
                   :rules="nameRules"
                   label="Name">
               </v-text-field> <!--Login-->
@@ -51,7 +51,7 @@
       return{
         valid: false,
         userData:{
-          name: '',
+          email: '',
           password: '',
           confirmPassword: '',
           id: '',
@@ -60,7 +60,7 @@
 
         nameRules: [
           v => !!v || 'Enter login',
-          v => (v && v.length <= 12) || 'Maximum length: 12 characters'
+          v => (v && v.length <= 32) || 'Maximum length: 32 characters'
         ],
         passwordRules: [
           v => !!v || 'Enter password',
@@ -79,6 +79,7 @@
       doRegistration(){
       if (this.$refs.form.validate()){
         console.log('hey')
+        this.$store.dispatch('registerUser', this.userData)
       }
       },
 

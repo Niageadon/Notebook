@@ -1,4 +1,6 @@
 export default {
+
+
   state: {
 
     records:{
@@ -8,11 +10,9 @@ export default {
       medical:[]
     },
 
+    duplicateId: 55,
 
 
-  },
-
-  mutations: {
 
   },
 
@@ -21,24 +21,31 @@ export default {
       return state.records
     },
 
-    checkRecordsDuplicate(state, noteType, date){
-      // returns [id] if duplicate is exist, else: -1
-      let duplicate = false;
-      let id = 0;
-      for (let i = 0; i < state.records[noteType].length; i++){
-        if(date === state.records[noteType][i].date){
-          duplicate = true;
-          id = i;
-        }
-      }
-      console.log(duplicate, id)
-      return duplicate? id : -1
+    DUPLICATEID: state =>{
+      return state.duplicateId
     }
 
   },
 
-  actions: {
+  mutations: {
+    checkRecordsDuplicate(state, payload){
+      let duplicate = false;
+      let id = 0;
+      for (let i = 0; i < state.records[payload.noteType].length; i++){
+        if(payload.date === state.records[payload.noteType][i].date){
+          duplicate = true;
+          id = i;
+        }
+      }
+      state.duplicateId = duplicate? -1: id;
+    }
+  },
 
+  actions: {
+    checkRecordsDuplicate({commit}, payload){
+      // returns [id] if duplicate is exist, else: -1
+      commit('checkRecordsDuplicate', payload)
+    }
   }
 
 }
