@@ -1,5 +1,7 @@
 <template>
   <v-container >
+
+    <div>fff{{getUser}}</div>
     <v-layout  align-center justify-center >
       <v-flex md8 xs12>
         <v-card  class="elevation-12">
@@ -11,8 +13,8 @@
               <v-text-field
                   prepend-icon="person"
                   v-model="userData.email"
-                  :rules="nameRules"
-                  label="Name">
+                  :rules="emailRules"
+                  label="E-mail">
               </v-text-field> <!--Login-->
               <v-text-field
                   class="mt-2"
@@ -34,8 +36,13 @@
           </v-card-text>
 
           <v-card-actions>
+            <v-card-text class="red--text font-italic title">{{getErrorMessage}}</v-card-text>
             <v-spacer></v-spacer>
-            <v-btn color="primary" :disabled="!valid" @click="doRegistration()">Registration</v-btn>
+            <v-btn
+                color="primary"
+                :disabled="!valid"
+                :loading="loading"
+                @click="doRegistration()">Registration</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -58,35 +65,44 @@
           accessLevel: 0
         },
 
-        nameRules: [
-          v => !!v || 'Enter login',
+        emailRules: [
+          v => !!v || 'Enter e-mail',
+          v => /.+@.+/.test(v) || 'E-mail must be valid',
           v => (v && v.length <= 32) || 'Maximum length: 32 characters'
         ],
         passwordRules: [
           v => !!v || 'Enter password',
-          v => (v && v.length >= 4) || 'Minimum length: 4 characters'
+          v => (v && v.length >= 4) || 'Minimum length: 6 characters'
         ],
         passwordRules2: [
           v => !!v || 'Enter confirm password',
-          v => (v && v.length >= 4) || 'Minimum length: 4 characters',
+          v => (v && v.length >= 4) || 'Minimum length: 6 characters',
           v => v === this.userData.password || 'Passwords do not match'
         ],
-
       }
     },
 
     methods:{
       doRegistration(){
-      if (this.$refs.form.validate()){
-        console.log('hey')
-        this.$store.dispatch('registerUser', this.userData)
-      }
+        if (this.$refs.form.validate()){
+          this.$store.dispatch('registerUser', this.userData)
+        }
       },
 
     },
 
     computed:{
+      getUser(){
+        return this.$store.getters.USER
+      },
 
+      loading(){
+        return this.$store.getters.LOADING
+      },
+
+      getErrorMessage(){
+        return this.$store.getters.ERRORMESSAGE
+      }
     }
   }
 </script>

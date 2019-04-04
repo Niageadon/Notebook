@@ -1,5 +1,9 @@
 <template>
   <div >
+
+    <div>  </div>
+
+
     <v-btn @click="saveNotes"> Send to locale storage</v-btn>
     <v-btn @click="sortNotes"> Sort notes</v-btn>
 
@@ -135,6 +139,7 @@
                 ></v-text-field>
                 <v-textarea
                     v-on:keydown.tab="editNote.body = doTabulation(editNote.body,$event)"
+                    auto-grow
                     box v-model="editNote.body"></v-textarea>
               </v-card-text>
               <v-card-actions> <v-btn @click="toggleEditingStatus(note.id)">Save changing</v-btn> </v-card-actions>
@@ -154,10 +159,11 @@
 
     data(){
       return{
+        //db: this.firebase.firestore(),
         showType: 'note',
         editMode: false,
         noteTypes: [
-          'Note', 'Task', 'Reminder', 'Medical'
+          'Note', 'Task', 'Reminder', 'Med'
         ],
 
         validateRules:{
@@ -189,7 +195,7 @@
           note:[],
           task:[],
           reminder:[],
-          medical:[]
+          med:[]
         }
 
 
@@ -212,7 +218,6 @@
         };
 
         let duplicateId = this.checkForDuplicate(noteType, pushNote.date);
-        console.log(duplicateId)
         if (duplicateId === -1) {
           //no duplicates
           this.records[noteType].push(pushNote)
@@ -293,9 +298,8 @@
           function compareAge(noteA, noteB) {
             let a = noteA.date.slice(0, 4) + noteA.date.slice(5, 7) + noteA.date.slice(8, 10);
             let b = noteB.date.slice(0, 4) + noteB.date.slice(5, 7) + noteB.date.slice(8, 10);
-            return b - a;
+            return a - b;
           });
-        console.log('sorted')
       }
 
     },
@@ -323,7 +327,9 @@
 </script>
 
 <style scoped>
-
+  .autoH{
+    height: auto;
+  }
 
 
 </style>

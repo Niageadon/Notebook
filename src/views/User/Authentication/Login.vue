@@ -11,8 +11,8 @@
               <v-text-field
                   prepend-icon="person"
                   v-model="userData.name"
-                  :rules="nameRules"
-                  label="Name"
+                  :rules="emailRules"
+                  label="E-mail"
 
               ></v-text-field>
               <v-text-field
@@ -21,7 +21,6 @@
                   v-model="userData.password"
                   :rules="passwordRules"
                   label="Password"
-
                   type="password"
               ></v-text-field>
             </v-form>
@@ -39,7 +38,7 @@
 
 <script>
   export default {
-    name: "Auth",
+    name: "Login",
 
     data() {
       return{
@@ -51,8 +50,9 @@
           accessLevel: 0
         },
 
-        nameRules: [
-          v => !!v || 'Enter login',
+        emailRules: [
+          v => !!v || 'Enter e-mail',
+          v => /.+@.+/.test(v) || 'E-mail must be valid'
         ],
         passwordRules: [
           v => !!v || 'Enter password',
@@ -64,7 +64,7 @@
     methods:{
       onLogin(){
 
-    }
+      }
     }
 
   }
