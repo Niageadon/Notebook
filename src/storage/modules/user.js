@@ -1,4 +1,5 @@
 import  * as fireBase from 'firebase'
+//import {try} from "q";
 
 class User {
   constructor(id){
@@ -43,20 +44,21 @@ export default {
   },
 
   actions: {
-    registerUser({commit}, {email, password}){
+    async registerUser({commit}, {email, password}){
       commit('setLoading', true);
       commit('setError', '');
 
-      fireBase.auth().createUserWithEmailAndPassword(email, password)
-        .then(user =>{
-          console.log(user);
-          commit('setLoading', false);
-          commit('setUser', new User(user.uid));
-        })
-        .catch(error =>{
-          commit('setLoading', false);
-          commit('setError', error.message);
-        })
+      try {
+      const user = fireBase.auth().createUserWithEmailAndPassword(email, password);
+        console.log(user);
+        commit('setLoading', false);
+        commit('setUser', new User(user.uid));
+      }
+      catch(error){
+        commit('setLoading', false);
+        commit('setError', error.i.message);
+        throw error
+      }
     }
   }
 

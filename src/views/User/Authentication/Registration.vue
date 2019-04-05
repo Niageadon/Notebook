@@ -86,6 +86,10 @@
       doRegistration(){
         if (this.$refs.form.validate()){
           this.$store.dispatch('registerUser', this.userData)
+            .then(() =>{
+              this.$router.push('/')
+            })
+            .catch(error => console.log(error))
         }
       },
 
