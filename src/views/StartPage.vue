@@ -1,14 +1,14 @@
 <template>
   <div >
 
-    <div>  </div>
-
+    <!--:style="{ background: `rgb(${red}, ${green}, ${blue})` }"-->
 
     <v-btn @click="saveNotes"> Send to locale storage</v-btn>
     <v-btn @click="sortNotes"> Sort notes</v-btn>
 
+
     <v-container fluid>
-      <v-layout xs12 justify-center>
+      <v-layout wrap xs12 justify-center>
         <v-flex xs12 md7>
           <v-card class="elevation-13">
             <v-card-title>
@@ -34,26 +34,26 @@
             <v-form v-model="validateRules.valid">
               <v-layout xs12 wrap column>
                 <v-menu
-                    ref="dateMenu"
-                    v-model="newNote.dateMenu"
-                    box
-                    :close-on-content-click="false"
-                    :nudge-right="50"
-                    :return-value.sync="newNote.date"
-                    lazy
-                    transition="scale-transition"
-                    offset-y
-                    full-width
-                    min-width="290px"
+                  ref="dateMenu"
+                  v-model="newNote.dateMenu"
+                  box
+                  :close-on-content-click="false"
+                  :nudge-right="50"
+                  :return-value.sync="newNote.date"
+                  lazy
+                  transition="scale-transition"
+                  offset-y
+                  full-width
+                  min-width="290px"
                 >
                   <template v-slot:activator="{ on }">
                     <v-text-field
-                        v-model="newNote.date"
-                        label="Set note date"
-                        prepend-inner-icon="date_range"
-                        readonly
-                        box
-                        v-on="on"
+                      v-model="newNote.date"
+                      label="Set note date"
+                      prepend-inner-icon="date_range"
+                      readonly
+                      box
+                      v-on="on"
                     ></v-text-field>
                   </template>
                   <v-date-picker  v-model="newNote.date" no-title scrollable>
@@ -98,10 +98,22 @@
             </v-card-actions> <!--button-->
           </v-card>
         </v-flex>
+
+        <v-flex mt-5 xs12 md7>
+          <v-select
+              v-model="showType"
+              :items="noteTypes"
+              item-text="state"
+              item-value="abbr"
+              label="Chose type"
+              persistent-hint
+          ></v-select>
+
+        </v-flex>
       </v-layout>
     </v-container> <!--New note-->
 
-    <v-container  >
+    <v-container>
       <v-layout wrap justify-center>
         <v-flex mt-4 pb-4 xs12 md11 v-for="note in records[showType]" :key="note.date">
           <div v-if="!records[showType][note.id].editing">
@@ -163,8 +175,14 @@
         showType: 'note',
         editMode: false,
         noteTypes: [
-          'Note', 'Task', 'Reminder', 'Med'
+          'note', 'task', 'reminder', 'med'
         ],
+        noteColors: {
+          note: '',
+          task: '',
+          reminder: '',
+          med: '',
+        },
 
         validateRules:{
           valid: false,
@@ -175,7 +193,7 @@
 
         newNote:{
           dateMenu: false,
-          noteType: 'Note',
+          noteType: 'note',
           id: 0,
           date: '',
           title: '',

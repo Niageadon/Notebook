@@ -1,5 +1,5 @@
 <template>
-  <v-container >
+  <v-container mt-5 pt-5>
     <v-layout  align-center justify-center >
       <v-flex md8 xs12>
         <v-card  class="elevation-12">
@@ -7,10 +7,10 @@
             <v-toolbar-title> Login </v-toolbar-title>
           </v-toolbar>
           <v-card-text>
-            <v-form validation>
+            <v-form ref="login" validation>
               <v-text-field
                   prepend-icon="person"
-                  v-model="userData.name"
+                  v-model="userData.email"
                   :rules="emailRules"
                   label="E-mail"
 
@@ -28,7 +28,12 @@
           <v-card-actions>
             <v-btn color="primary" :to="'/Registration'" >Registration</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="onLogin()">Login</v-btn>
+            <v-btn
+                color="primary"
+                @click="onLogin()"
+                :loading="loading">
+              Login
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -42,9 +47,9 @@
 
     data() {
       return{
-
+        successLogin: false,
         userData:{
-          name: '',
+          email: '',
           password: '',
           id: '',
           accessLevel: 0
@@ -63,8 +68,20 @@
 
     methods:{
       onLogin(){
-
+        if (this.$refs.login.validate()){
+          this.$store.dispatch('login', this.userData)
+        }
       }
+    },
+
+    computed:{
+      /*getErrorMessage(){
+        return this.$store.getters.ERRORMESSAGE
+      },*/
+
+      loading(){
+        return this.$store.getters.LOADING
+      },
     }
 
   }

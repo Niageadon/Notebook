@@ -1,11 +1,10 @@
 <template>
-  <v-container >
+  <v-container mt-5 pt-5 >
 
-    <div>fff{{getUser}}</div>
     <v-layout  align-center justify-center >
       <v-flex md8 xs12>
         <v-card  class="elevation-12">
-          <v-toolbar dark color="primary">
+          <v-toolbar dark :color="getStatusColor">
             <v-toolbar-title>Registration form </v-toolbar-title>
           </v-toolbar>
           <v-card-text>
@@ -36,18 +35,22 @@
           </v-card-text>
 
           <v-card-actions>
-            <v-card-text class="red--text font-italic title">{{getErrorMessage}}</v-card-text>
             <v-spacer></v-spacer>
             <v-btn
-                color="primary"
+                :color="getStatusColor"
                 :disabled="!valid"
                 :loading="loading"
-                @click="doRegistration()">Registration</v-btn>
+                @click="doRegistration()">
+              <v-icon v-if="getSuccessStatus" >done</v-icon>
+              Registration
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
     </v-layout>
   </v-container>
+
+
 </template>
 
 <script>
@@ -72,11 +75,11 @@
         ],
         passwordRules: [
           v => !!v || 'Enter password',
-          v => (v && v.length >= 4) || 'Minimum length: 6 characters'
+          v => (v && v.length >= 6) || 'Minimum length: 6 characters'
         ],
         passwordRules2: [
           v => !!v || 'Enter confirm password',
-          v => (v && v.length >= 4) || 'Minimum length: 6 characters',
+          v => (v && v.length >= 6) || 'Minimum length: 6 characters',
           v => v === this.userData.password || 'Passwords do not match'
         ],
       }
@@ -84,18 +87,38 @@
 
     methods:{
       doRegistration(){
-        if (this.$refs.form.validate()){
+        if (this.$refs.form.validate())
+        {
           this.$store.dispatch('registerUser', this.userData)
             .then(() =>{
-              this.$router.push('/')
+              this.doneRegistration();
             })
-            .catch(error => console.log(error))
+            .catch(error =>{
+              console.log('er', error)
+            })
+        }
+        },
+
+      doneRegistration(){
+          setTimeout(() =>{
+            this.$router.push('/Login');
+            this.$store.dispatch('registrationSuccess');
+          },2000)
         }
       },
 
-    },
+
 
     computed:{
+      getSuccessStatus(){
+        if (this.$store.getters.SUCCESS) this.doneRegistration();
+        return this.$store.getters.SUCCESS
+      },
+
+      getStatusColor(){
+        return this.getSuccessStatus? 'green' : 'primary'
+      },
+
       getUser(){
         return this.$store.getters.USER
       },
@@ -104,9 +127,11 @@
         return this.$store.getters.LOADING
       },
 
-      getErrorMessage(){
+      /*getErrorMessage(){
         return this.$store.getters.ERRORMESSAGE
-      }
+      },*/
+
+
     }
   }
 </script>
