@@ -86,32 +86,27 @@
     },
 
     methods:{
-      doRegistration(){
+      async doRegistration(){
         if (this.$refs.form.validate())
         {
-          this.$store.dispatch('registerUser', this.userData)
-            .then(() =>{
-              this.doneRegistration();
-            })
-            .catch(error =>{
-              console.log('er', error)
-            })
+          await this.$store.dispatch('registerUser', this.userData);
+          if(this.getSuccessStatus) {
+            setTimeout(() =>{
+              this.$router.push('/Login');
+              this.$store.dispatch('doneAuthentication');
+            },2000)
+          }
+
         }
         },
 
-      doneRegistration(){
-          setTimeout(() =>{
-            this.$router.push('/Login');
-            this.$store.dispatch('registrationSuccess');
-          },2000)
-        }
+
       },
 
 
 
     computed:{
       getSuccessStatus(){
-        if (this.$store.getters.SUCCESS) this.doneRegistration();
         return this.$store.getters.SUCCESS
       },
 

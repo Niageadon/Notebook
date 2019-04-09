@@ -15,7 +15,7 @@
           @input="closeError()"
           value="true"
           @click="closeError()"
-          :color="authenticationSuccess? green: error"
+          color="error"
       >
         {{ getError }}
         <v-btn
@@ -60,7 +60,7 @@
       },
 
       authenticationSuccess(){
-        return this.$store.dispatch()
+        return this.$store.getters.SUCCESS
       }
 
 
@@ -74,4 +74,5 @@
 
 <style>
   .element::-webkit-scrollbar { width: 0 !important }
+
 </style>

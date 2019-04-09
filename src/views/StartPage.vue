@@ -119,7 +119,7 @@
           <div v-if="!records[showType][note.id].editing">
             <div style="text-align: center" class="font-weight-black display-1 font-italic">{{note.date}}</div>
             <v-card class="elevation-10">
-              <v-card-title class="headline font-weight-bold">{{note.title}}</v-card-title>
+              <v-card-title class="headline grey lighten-2 font-weight-bold">{{note.title}}</v-card-title>
               <v-divider></v-divider>
               <v-card-text class="title">
                 <v-textarea v-model="note.body"
@@ -133,12 +133,40 @@
                 <v-img  src="https://cdn.vuetifyjs.com/images/carousel/sky.jpg"> </v-img>
               </v-responsive>-->
               <v-card-actions>
-                <v-btn @click="toggleEditingStatus(note.id)">Редактировать запись</v-btn>
+                <v-dialog v-model="editRecord">
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                      @click="editRecords(note.id)"
+                      color="red lighten-2"
+                      dark
+                      v-on="on"
+                  >
+                    Редактировать запись
+                  </v-btn>
+                </template>
+
+                  <v-card class="elevation-24">
+                    <v-card-title>hey</v-card-title>
+                    <v-divider/>
+                    <v-card-text>
+                      <v-text-field
+                          label="Headline"
+                          prepend-inner-icon="title"
+                          v-model="editNote.title"
+                      ></v-text-field>
+                      <v-textarea
+                          v-on:keydown.tab="editNote.body = doTabulation(editNote.body,$event)"
+                          auto-grow
+                          box v-model="editNote.body"></v-textarea>
+                    </v-card-text>
+                    <v-card-actions> <v-btn @click="saveEditChanges(note.id)" >Save changing</v-btn> </v-card-actions>
+                  </v-card>
+                </v-dialog>
               </v-card-actions>
             </v-card>
           </div>
 
-          <div v-else>
+         <!-- <div v-else>
             <div style="text-align: center" class="font-weight-black display-1 font-italic">Editing</div>
             <v-card class="elevation-24">
               <v-card-title>hey</v-card-title>
@@ -154,10 +182,10 @@
                     auto-grow
                     box v-model="editNote.body"></v-textarea>
               </v-card-text>
-              <v-card-actions> <v-btn @click="toggleEditingStatus(note.id)">Save changing</v-btn> </v-card-actions>
+              <v-card-actions> <v-btn @click="editRecords(note.id)">Save changing</v-btn> </v-card-actions>
             </v-card>
 
-          </div>
+          </div>-->
         </v-flex>
       </v-layout>
     </v-container> <!--Note's array-->
@@ -172,8 +200,8 @@
     data(){
       return{
         //db: this.firebase.firestore(),
+        editRecord: false,
         showType: 'note',
-        editMode: false,
         noteTypes: [
           'note', 'task', 'reminder', 'med'
         ],
@@ -199,7 +227,6 @@
           title: '',
           body: '',
           isImportant: false,
-          editing: false
         },
 
         editNote:{
@@ -279,26 +306,21 @@
         return(year + '-' + month + '-' + day )
       },
 
-      toggleEditingStatus(id){
-        if (!this.editMode) {
-          this.editMode = true;
-          this.records[this.showType][id].editing = true;
-
+      editRecords(id){
           this.editNote.noteType =  this.showType;
           this.editNote.date =      this.records[this.showType][id].date;
           this.editNote.title =     this.records[this.showType][id].title;
           this.editNote.body =      this.records[this.showType][id].body;
-        }
-        else if (this.records[this.showType][id].editing){
-          //if note are on edit mode (single note edit)
 
-          this.records[this.showType][id].date   = this.editNote.date;
-          this.records[this.showType][id].title  = this.editNote.title;
-          this.records[this.showType][id].body   = this.editNote.body;
+          this.editRecord = true;
+      },
 
-          this.editMode = false;
-          this.records[this.showType][id].editing = false;
-        }
+      saveEditChanges(id){
+        this.records[this.showType][id].date   = this.editNote.date;
+        this.records[this.showType][id].title  = this.editNote.title;
+        this.records[this.showType][id].body   = this.editNote.body;
+
+        this.editRecord = false;
       },
 
       doTabulation(text, event){

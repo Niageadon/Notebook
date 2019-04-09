@@ -3,7 +3,10 @@
     <v-layout  align-center justify-center >
       <v-flex md8 xs12>
         <v-card  class="elevation-12">
-          <v-toolbar dark color="primary">
+          <v-toolbar
+              dark
+              :color="getStatusColor"
+          >
             <v-toolbar-title> Login </v-toolbar-title>
           </v-toolbar>
           <v-card-text>
@@ -26,10 +29,12 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" :to="'/Registration'" >Registration</v-btn>
+            <v-btn
+                :color="getStatusColor"
+                :to="'/Registration'" >Registration</v-btn>
             <v-spacer></v-spacer>
             <v-btn
-                color="primary"
+                :color="getStatusColor"
                 @click="onLogin()"
                 :loading="loading">
               Login
@@ -47,7 +52,6 @@
 
     data() {
       return{
-        successLogin: false,
         userData:{
           email: '',
           password: '',
@@ -67,11 +71,19 @@
     },
 
     methods:{
-      onLogin(){
-        if (this.$refs.login.validate()){
-          this.$store.dispatch('login', this.userData)
+      async onLogin(){
+        if (this.$refs.login.validate())
+        {
+          await this.$store.dispatch('login', this.userData);
+          if (this.getSuccessStatus) {
+            setTimeout(() => {
+              this.$router.push('/');
+              this.$store.dispatch('doneAuthentication');
+            }, 2000)
+          }
         }
       }
+
     },
 
     computed:{
@@ -81,6 +93,14 @@
 
       loading(){
         return this.$store.getters.LOADING
+      },
+
+      getSuccessStatus(){
+        return this.$store.getters.SUCCESS
+      },
+
+      getStatusColor(){
+        return this.getSuccessStatus? 'green' : 'primary'
       },
     }
 

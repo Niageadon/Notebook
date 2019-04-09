@@ -93,11 +93,13 @@ export default {
       commit('setError', '');
 
       try {
-        await fireBase.auth().signInWithEmailAndPassword(email, password);
-        commit('setLoading', false);
+        const user = await fireBase.auth().signInWithEmailAndPassword(email, password);
+        commit('setSuccess', true);
       }
       catch (error){
         commit('setError', error.message);
+      }
+      finally {
         commit('setLoading', false);
       }
 
@@ -117,7 +119,7 @@ export default {
       commit('setError', '')
     },
 
-    registrationSuccess({commit}){
+    doneAuthentication({commit}){
       commit('setSuccess', false)
     }
   }
