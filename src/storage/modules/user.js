@@ -1,4 +1,4 @@
-import  * as fireBase from 'firebase'
+import  * as fireBase from 'firebase/app'
 //import {try} from "q";
 
 class User {
@@ -11,8 +11,9 @@ export default {
   state: {
     user: null,
     loading: false,
-    success: false,
+    success: false,  //успешный логин или регистрация
     errorMessage: '',
+    userIsAuthorized: false,
   },
 
   getters: {
@@ -27,6 +28,9 @@ export default {
     },
     SUCCESS: state =>{
       return state.success
+    },
+    USERISAUTHORIZED: state =>{
+      return state.userIsAuthorized
     }
 
   },
@@ -47,6 +51,10 @@ export default {
     setSuccess(state, payload){
       state.success = payload
     },
+
+    setAuthorizationStatus(state, payload){
+      state.userIsAuthorized = payload
+    }
 
   },
 
@@ -91,10 +99,12 @@ export default {
       commit('setLoading', true);
       commit('setSuccess', false);
       commit('setError', '');
+      commit('setAuthorizationStatus', false);
 
       try {
-        const user = await fireBase.auth().signInWithEmailAndPassword(email, password);
+        await fireBase.auth().signInWithEmailAndPassword(email, password);
         commit('setSuccess', true);
+        commit('setAuthorizationStatus', true)
       }
       catch (error){
         commit('setError', error.message);
@@ -102,17 +112,6 @@ export default {
       finally {
         commit('setLoading', false);
       }
-
-      /*fireBase.auth().signInWithEmailAndPassword(email, password)
-        .then(login =>{
-          console.log('login', login);
-          commit('setLoading', false);
-        })
-        .catch(error =>{
-          console.log('error', error);
-          commit('setError', error.message);
-          commit('setLoading', false);
-        })*/
     },
 
     clearError({commit}){

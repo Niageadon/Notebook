@@ -3,8 +3,9 @@ import './plugins/vuetify'
 import App from './App.vue'
 import store from './storage'
 import router from './plugins/router'
-import * as fireBase from 'firebase'
-
+import * as fireBase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/firestore'
 
 fireBase.initializeApp({
   apiKey: 'AIzaSyDxMmvwTIRr5m9au-3-_nAQnLGBtBKMwrY',
@@ -14,7 +15,7 @@ fireBase.initializeApp({
   storageBucket: 'vue-note-84b36.appsot.com',
   messagingSenderId: '184897689684'
 })
-export const db =fireBase.firestore()
+export const db = fireBase.firestore()
 
 
 Vue.config.productionTip = false;

@@ -1,16 +1,19 @@
+import  * as fireBase from 'firebase/app'
+
+
 export default {
 
 
   state: {
 
     records:{
-      note:[{date:1}],
+      note:[],
       task:[],
       reminder:[],
       medical:[]
     },
 
-    duplicateId: 55,
+    duplicateId: -1,
 
 
 
@@ -21,9 +24,7 @@ export default {
       return state.records
     },
 
-    DUPLICATEID: state =>{
-      return state.duplicateId
-    }
+
 
   },
 
@@ -38,13 +39,14 @@ export default {
         }
       }
       state.duplicateId = duplicate? -1: id;
-    }
+    },
+
+
   },
 
   actions: {
-    checkRecordsDuplicate({commit}, payload){
-      // returns [id] if duplicate is exist, else: -1
-      commit('checkRecordsDuplicate', payload)
+    async sendRecordsToServer(){
+
     }
   }
 

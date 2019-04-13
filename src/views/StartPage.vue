@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div>
 
     <!--:style="{ background: `rgb(${red}, ${green}, ${blue})` }"-->
 
@@ -25,7 +25,7 @@
                   ></v-select>
                 </v-flex> <!--note type-->
                 <v-flex xs6 md4 class="offset-md1 offset-xs0">
-                  <v-checkbox  append-icon="warning"  label="#Important" v-model="newNote.isImportant"></v-checkbox>
+                  <v-checkbox  append-icon="warning"  label="Important" v-model="newNote.isImportant"></v-checkbox>
                 </v-flex> <!--"Important" checkbox-->
               </v-layout>
             </v-card-title>
@@ -101,7 +101,7 @@
 
         <v-flex mt-5 xs12 md7>
           <v-select
-              v-model="showType"
+              v-model="selectedNoteTypeToShow"
               :items="noteTypes"
               item-text="state"
               item-value="abbr"
@@ -115,8 +115,8 @@
 
     <v-container>
       <v-layout wrap justify-center>
-        <v-flex mt-4 pb-4 xs12 md11 v-for="note in records[showType]" :key="note.date">
-          <div v-if="!records[showType][note.id].editing">
+        <v-flex mt-4 pb-4 xs12 md11 v-for="note in records[selectedNoteTypeToShow]" :key="note.date">
+          <div >
             <div style="text-align: center" class="font-weight-black display-1 font-italic">{{note.date}}</div>
             <v-card class="elevation-10">
               <v-card-title class="headline grey lighten-2 font-weight-bold">{{note.title}}</v-card-title>
@@ -136,7 +136,7 @@
                 <v-dialog v-model="editRecord">
                 <template v-slot:activator="{ on }">
                   <v-btn
-                      @click="editRecords(note.id)"
+                      @click="editRecords(note.date)"
                       color="red lighten-2"
                       dark
                       v-on="on"
@@ -159,7 +159,7 @@
                           auto-grow
                           box v-model="editNote.body"></v-textarea>
                     </v-card-text>
-                    <v-card-actions> <v-btn @click="saveEditChanges(note.id)" >Save changing</v-btn> </v-card-actions>
+                    <v-card-actions> <v-btn @click="saveEditChanges(note.i)" >Save changing</v-btn> </v-card-actions>
                   </v-card>
                 </v-dialog>
               </v-card-actions>
@@ -200,8 +200,9 @@
     data(){
       return{
         //db: this.firebase.firestore(),
-        editRecord: false,
-        showType: 'note',
+        editRecordIndex: -1,
+        editRecord: false, //для v-dialog
+        selectedNoteTypeToShow: 'note',
         noteTypes: [
           'note', 'task', 'reminder', 'med'
         ],
@@ -222,7 +223,6 @@
         newNote:{
           dateMenu: false,
           noteType: 'note',
-          id: 0,
           date: '',
           title: '',
           body: '',
@@ -306,20 +306,20 @@
         return(year + '-' + month + '-' + day )
       },
 
-      editRecords(id){
-          this.editNote.noteType =  this.showType;
-          this.editNote.date =      this.records[this.showType][id].date;
-          this.editNote.title =     this.records[this.showType][id].title;
-          this.editNote.body =      this.records[this.showType][id].body;
+      editRecords(date){
+          let id = this.editRecordIndex = this.findArrayIndexByDate(date);
 
-          this.editRecord = true;
+          this.editNote.noteType =  this.selectedNoteTypeToShow;
+          this.editNote.date =      this.records[this.selectedNoteTypeToShow][id].date;
+          this.editNote.title =     this.records[this.selectedNoteTypeToShow][id].title;
+          this.editNote.body =      this.records[this.selectedNoteTypeToShow][id].body;
       },
 
-      saveEditChanges(id){
-        this.records[this.showType][id].date   = this.editNote.date;
-        this.records[this.showType][id].title  = this.editNote.title;
-        this.records[this.showType][id].body   = this.editNote.body;
-
+      saveEditChanges(){
+        let id = this.editRecordIndex;
+        this.records[this.selectedNoteTypeToShow][id].date   = this.editNote.date;
+        this.records[this.selectedNoteTypeToShow][id].title  = this.editNote.title;
+        this.records[this.selectedNoteTypeToShow][id].body   = this.editNote.body;
         this.editRecord = false;
       },
 
@@ -334,12 +334,20 @@
       },
 
       sortNotes(){
-        this.records.note = this.records.note.sort(
+        this.records[this.selectedNoteTypeToShow] = this.records[this.selectedNoteTypeToShow].sort(
           function compareAge(noteA, noteB) {
             let a = noteA.date.slice(0, 4) + noteA.date.slice(5, 7) + noteA.date.slice(8, 10);
             let b = noteB.date.slice(0, 4) + noteB.date.slice(5, 7) + noteB.date.slice(8, 10);
             return a - b;
           });
+      },
+
+      findArrayIndexByDate(date){
+        for(let i = 0; i < this.records[this.selectedNoteTypeToShow].length; i++){
+          if(date === this.records[this.selectedNoteTypeToShow][i].date)
+            return i
+        }
+        return -1
       }
 
     },
