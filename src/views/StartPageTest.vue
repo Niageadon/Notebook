@@ -3,9 +3,7 @@
 
     <!--:style="{ background: `rgb(${red}, ${green}, ${blue})` }"-->
 
-
-
-    <v-container fluid>
+    <v-container mt-4 fluid>
       <v-layout wrap xs12 justify-center>
         <v-flex xs12 md7>
           <v-card class="elevation-13">
@@ -14,7 +12,7 @@
                 <v-flex  xs6 md4 >
                   <v-select
                       v-model="newNote.recordType"
-                      :items="recordTypes"
+                      :items="getTypesArray"
                       item-text="state"
                       item-value="abbr"
                       label="Select"
@@ -97,32 +95,27 @@
           </v-card>
         </v-flex>
 
-        <v-flex mt-5 xs12 md7>
-          <v-select
-              v-model="selectedRecordTypeToShow"
-              :items="recordTypes"
-              item-text="state"
-              item-value="abbr"
-              label="Chose type"
-              persistent-hint
-          ></v-select>
 
-          <v-flex xs12>
-            <v-radio-group row v-model="selectedRecordTypeToShow" :mandatory="false">
-              <v-container >
-              <v-layout align-center wrap>
-                  <v-radio label="Note" value="note"></v-radio>
-                  <v-radio label="Task" value="task"></v-radio>
-                  <v-radio label="Reminder" value="reminder"></v-radio>
-                  <v-radio label="Med" value="med"></v-radio>
-              </v-layout>
-              </v-container>
-            </v-radio-group>
+
+          <v-flex mt-3 xs12 md7>
+            <v-layout wrap class="noSelect" row xs12 justify-space-between>
+              <v-flex md3 xs6 v-for="(type, i) in recordTypes" :key="i">
+                <v-card
+                    @click="selectedRecordTypeToShow = type.name"
+                    style="text-align: center"
+                    min-height="40"
+                    :color="(selectedRecordTypeToShow === type.name)? type.color: 'gray'" hover>
+                 <v-card-text class="title">
+                    {{type.name}}
+                 </v-card-text>
+                </v-card>
+                </v-flex>
+            </v-layout>
           </v-flex>
 
 
 
-        </v-flex>
+
       </v-layout>
     </v-container> <!--New note-->
 
@@ -197,15 +190,15 @@
         //db: this.firebase.firestore(),
         recordOnEdition: false, //для v-dialog
         selectedRecordTypeToShow: 'note',
+
         recordTypes: [
-          'note', 'task', 'reminder', 'med'
+          {name: 'note',      color: 'red'},
+          {name: 'task',      color: 'blue'},
+          {name: 'reminder',  color: 'yellow'},
+          {name: 'med',       color: 'green'}
+
         ],
-        noteColors: {
-          note: '',
-          task: '',
-          reminder: '',
-          med: '',
-        },
+
 
         validateRules:{
           valid: false,
@@ -244,10 +237,8 @@
           isImportant:  this.newNote.isImportant,
           title:        this.newNote.title,
           body:         this.newNote.body,
-          editing:      this.newNote.editing,
         };
         this.$store.dispatch('NewRecord', {recordType, newRecord})
-
       },
 
       getCurrentDate(){
@@ -260,8 +251,6 @@
         month = (month.toString().length === 1)? '0' + month : month;
         return(year + '-' + month + '-' + day )
       },
-
-
 
       doTabulation(text, event){
         event.preventDefault(); // disable tabulation
@@ -301,6 +290,14 @@
     computed:{
       getRecord(){
         return this.$store.getters.RECORDS;
+      },
+
+      getTypesArray(){
+        let array = [];
+        for (let i = 0; i < this.recordTypes.length; i++){
+          array.push(this.recordTypes[i].name)
+        }
+        return array
       }
     },
 

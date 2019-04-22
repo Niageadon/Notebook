@@ -1,13 +1,9 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <div>
 
     <!--:style="{ background: `rgb(${red}, ${green}, ${blue})` }"-->
 
-    <v-btn @click="saveNotes"> Send to locale storage</v-btn>
-    <v-btn @click="sortNotes"> Sort notes</v-btn>
-
-
-    <v-container fluid>
+    <v-container mt-4 fluid>
       <v-layout wrap xs12 justify-center>
         <v-flex xs12 md7>
           <v-card class="elevation-13">
@@ -16,7 +12,7 @@
                 <v-flex  xs6 md4 >
                   <v-select
                       v-model="newNote.recordType"
-                      :items="noteTypes"
+                      :items="getTypesArray"
                       item-text="state"
                       item-value="abbr"
                       label="Select"
@@ -34,26 +30,26 @@
             <v-form v-model="validateRules.valid">
               <v-layout xs12 wrap column>
                 <v-menu
-                  ref="dateMenu"
-                  v-model="newNote.dateMenu"
-                  box
-                  :close-on-content-click="false"
-                  :nudge-right="50"
-                  :return-value.sync="newNote.date"
-                  lazy
-                  transition="scale-transition"
-                  offset-y
-                  full-width
-                  min-width="290px"
+                    ref="dateMenu"
+                    v-model="newNote.dateMenu"
+                    box
+                    :close-on-content-click="false"
+                    :nudge-right="50"
+                    :return-value.sync="newNote.date"
+                    lazy
+                    transition="scale-transition"
+                    offset-y
+                    full-width
+                    min-width="290px"
                 >
                   <template v-slot:activator="{ on }">
                     <v-text-field
-                      v-model="newNote.date"
-                      label="Set note date"
-                      prepend-inner-icon="date_range"
-                      readonly
-                      box
-                      v-on="on"
+                        v-model="newNote.date"
+                        label="Set note date"
+                        prepend-inner-icon="date_range"
+                        readonly
+                        box
+                        v-on="on"
                     ></v-text-field>
                   </template>
                   <v-date-picker  v-model="newNote.date" no-title scrollable>
@@ -99,23 +95,33 @@
           </v-card>
         </v-flex>
 
-        <v-flex mt-5 xs12 md7>
-          <v-select
-              v-model="selectedNoteTypeToShow"
-              :items="noteTypes"
-              item-text="state"
-              item-value="abbr"
-              label="Chose type"
-              persistent-hint
-          ></v-select>
 
+
+        <v-flex mt-3 xs12 md7>
+          <v-layout wrap class="noSelect" row xs12 justify-space-between>
+            <v-flex md3 xs6 v-for="(type, i) in recordTypes" :key="i">
+              <v-card
+                  @click="selectedRecordTypeToShow = type.name"
+                  style="text-align: center"
+                  min-height="40"
+                  :color="(selectedRecordTypeToShow === type.name)? type.color: 'gray'" hover>
+                <v-card-text class="title">
+                  {{type.name}}
+                </v-card-text>
+              </v-card>
+            </v-flex>
+          </v-layout>
         </v-flex>
+
+
+
+
       </v-layout>
     </v-container> <!--New note-->
 
     <v-container>
       <v-layout wrap justify-center>
-        <v-flex mt-4 pb-4 xs12 md11 v-for="note in records[selectedNoteTypeToShow]" :key="note.date">
+        <v-flex mt-4 pb-4 xs12 md11 v-for="note in getRecord[selectedRecordTypeToShow]" :key="note.date">
           <div >
             <div style="text-align: center" class="font-weight-black display-1 font-italic">{{note.date}}</div>
             <v-card class="elevation-10">
@@ -133,17 +139,17 @@
                 <v-img  src="https://cdn.vuetifyjs.com/images/carousel/sky.jpg"> </v-img>
               </v-responsive>-->
               <v-card-actions>
-                <v-dialog v-model="editRecord">
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                      @click="editRecords(note.date)"
-                      color="red lighten-2"
-                      dark
-                      v-on="on"
-                  >
-                    Редактировать запись
-                  </v-btn>
-                </template>
+                <v-dialog v-model="recordOnEdition">
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                        @click="editRecord(note.date)"
+                        color="red lighten-2"
+                        dark
+                        v-on="on"
+                    >
+                      Редактировать запись
+                    </v-btn>
+                  </template>
 
                   <v-card class="elevation-24">
                     <v-card-title>hey</v-card-title>
@@ -152,12 +158,14 @@
                       <v-text-field
                           label="Headline"
                           prepend-inner-icon="title"
-                          v-model="editNote.title"
+                          v-model="editedRecord.title"
                       ></v-text-field>
                       <v-textarea
-                          v-on:keydown.tab="editNote.body = doTabulation(editNote.body,$event)"
+                          v-on:keydown.tab="editedRecord.body = doTabulation(editedRecord.body,$event)"
                           auto-grow
-                          box v-model="editNote.body"></v-textarea>
+                          box
+                          v-model="editedRecord.body">
+                      </v-textarea>
                     </v-card-text>
                     <v-card-actions> <v-btn @click="saveEditChanges(note.i)" >Save changing</v-btn> </v-card-actions>
                   </v-card>
@@ -166,26 +174,6 @@
             </v-card>
           </div>
 
-         <!-- <div v-else>
-            <div style="text-align: center" class="font-weight-black display-1 font-italic">Editing</div>
-            <v-card class="elevation-24">
-              <v-card-title>hey</v-card-title>
-              <v-divider/>
-              <v-card-text>
-                <v-text-field
-                    label="Headline"
-                    prepend-inner-icon="title"
-                    v-model="editedRecord.title"
-                ></v-text-field>
-                <v-textarea
-                    v-on:keydown.tab="editedRecord.body = doTabulation(editedRecord.body,$event)"
-                    auto-grow
-                    box v-model="editedRecord.body"></v-textarea>
-              </v-card-text>
-              <v-card-actions> <v-btn @click="editRecords(note.id)">Save changing</v-btn> </v-card-actions>
-            </v-card>
-
-          </div>-->
         </v-flex>
       </v-layout>
     </v-container> <!--Note's array-->
@@ -200,18 +188,17 @@
     data(){
       return{
         //db: this.firebase.firestore(),
-        editRecordIndex: -1,
-        editRecord: false, //для v-dialog
+        recordOnEdition: false, //для v-dialog
         selectedRecordTypeToShow: 'note',
+
         recordTypes: [
-          'note', 'task', 'reminder', 'med'
+          {name: 'note',      color: 'red'},
+          {name: 'task',      color: 'blue'},
+          {name: 'reminder',  color: 'yellow'},
+          {name: 'med',       color: 'green'}
+
         ],
-        noteColors: {
-          note: '',
-          task: '',
-          reminder: '',
-          med: '',
-        },
+
 
         validateRules:{
           valid: false,
@@ -236,63 +223,21 @@
           body: '',
         },
 
-        records:{
-          note:[],
-          task:[],
-          reminder:[],
-          med:[]
-        }
-
-
       }
     },
 
     methods:{
       addNote() {
         //this.notes.push(this.newNote.note)
-        let noteType = this.newNote.recordType.toLowerCase();
-        this.newNote.id = this.records[noteType].length;
+        let recordType = this.newNote.recordType.toLowerCase();
 
-        let pushNote = {
-          id:           this.newNote.id,
+        let newRecord = {
           date:         this.newNote.date,
           isImportant:  this.newNote.isImportant,
           title:        this.newNote.title,
           body:         this.newNote.body,
-          editing:      this.newNote.editing,
         };
-
-        let duplicateId = this.checkForDuplicate(noteType, pushNote.date);
-        if (duplicateId === -1) {
-          //no duplicates
-          this.records[noteType].push(pushNote)
-        }
-        else {
-          // add body
-          this.records[noteType][duplicateId].body += '\n\n' + pushNote.body;
-
-          // add title
-          if(this.records[noteType][duplicateId].title === ''){
-            this.records[noteType][duplicateId].title = pushNote.title;
-          }
-          else if (!(pushNote.title === '')){this.records[noteType][duplicateId].title += '\u0009' + '&' + '\u0009' + pushNote.title;
-          }
-
-        }
-        //this.notes.push(pushNote)
-      },
-
-      checkForDuplicate(noteType, date){
-        let duplicate = false;
-        let id = 0;
-        // console.log(this.records[recordType][0].date);
-        for (let i = 0; i < this.records[noteType].length; i++){
-          if(date === this.records[noteType][i].date){
-            duplicate = true;
-            id = i;
-          }
-        }
-        return duplicate? id : -1
+        this.$store.dispatch('NewRecord', {recordType, newRecord})
       },
 
       getCurrentDate(){
@@ -306,54 +251,54 @@
         return(year + '-' + month + '-' + day )
       },
 
-      editRecords(date){
-          let id = this.editRecordIndex = this.findArrayIndexByDate(date);
-
-          this.editedRecord.recordType =  this.selectedRecordTypeToShow;
-          this.editedRecord.date =      this.records[this.selectedRecordTypeToShow][id].date;
-          this.editedRecord.title =     this.records[this.selectedRecordTypeToShow][id].title;
-          this.editedRecord.body =      this.records[this.selectedRecordTypeToShow][id].body;
-      },
-
-      saveEditChanges(){
-        let id = this.editRecordIndex;
-        this.records[this.selectedRecordTypeToShow][id].date   = this.editedRecord.date;
-        this.records[this.selectedRecordTypeToShow][id].title  = this.editedRecord.title;
-        this.records[this.selectedRecordTypeToShow][id].body   = this.editedRecord.body;
-        this.editRecord = false;
-      },
-
       doTabulation(text, event){
         event.preventDefault(); // disable tabulation
         return text + '\u0009'  // add tab
       },
 
-      saveNotes() {
+      /*      saveNotes() {
         const parsed = JSON.stringify(this.records);
         localStorage.setItem('records', parsed);
-      },
-
-      sortNotes(){
-        this.records[this.selectedRecordTypeToShow] = this.records[this.selectedRecordTypeToShow].sort(
-          function compareAge(noteA, noteB) {
-            let a = noteA.date.slice(0, 4) + noteA.date.slice(5, 7) + noteA.date.slice(8, 10);
-            let b = noteB.date.slice(0, 4) + noteB.date.slice(5, 7) + noteB.date.slice(8, 10);
-            return a - b;
-          });
-      },
+      },*/
 
       findArrayIndexByDate(date){
-        for(let i = 0; i < this.records[this.selectedRecordTypeToShow].length; i++){
-          if(date === this.records[this.selectedRecordTypeToShow][i].date)
+        for(let i = 0; i < this.getRecord[this.selectedRecordTypeToShow].length; i++){
+          if(date === this.getRecord[this.selectedRecordTypeToShow][i].date)
             return i
         }
         return -1
-      }
+      },
 
+      editRecord(date){
+        let recordId = this.findArrayIndexByDate(date);
+        //this.editedRecord = this.getRecord[this.selectedRecordTypeToShow][recordId];
+        let record = this.getRecord[this.selectedRecordTypeToShow][recordId]
+        this.editedRecord.recordType  = this.selectedRecordTypeToShow;
+        this.editedRecord.date        = record.date;
+        this.editedRecord.title       = record.title;
+        this.editedRecord.body        = record.body;
+      },
+
+      saveEditChanges(){
+        let editedRecord = this.editedRecord;
+        console.log(editedRecord)
+        this.$store.dispatch('saveEditRecord', editedRecord);
+        this.recordOnEdition = false;
+      },
     },
 
     computed:{
+      getRecord(){
+        return this.$store.getters.RECORDS;
+      },
 
+      getTypesArray(){
+        let array = [];
+        for (let i = 0; i < this.recordTypes.length; i++){
+          array.push(this.recordTypes[i].name)
+        }
+        return array
+      }
     },
 
     mounted(){
@@ -369,6 +314,10 @@
     },
 
     watch: {
+      selectedRecordTypeToShow(){
+        this.$store.dispatch('setCurrentRecordType', this.selectedRecordTypeToShow);
+        //console.log(this.selectedRecordTypeToShow)
+      },
 
     }
   }

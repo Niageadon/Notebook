@@ -36,7 +36,7 @@
             <v-btn
                 :color="getStatusColor"
                 @click="onLogin()"
-                :loading="loading">
+                :loading="loadingUserInfo">
               Login
             </v-btn>
           </v-card-actions>
@@ -79,7 +79,7 @@
             setTimeout(() => {
               this.$router.push('/');
               this.$store.dispatch('doneAuthentication');
-            }, 2000)
+            }, 700)
           }
         }
       }
@@ -91,8 +91,8 @@
         return this.$store.getters.ERRORMESSAGE
       },*/
 
-      loading(){
-        return this.$store.getters.LOADING
+      loadingUserInfo(){
+        return this.$store.getters.LOADINGUSERINFO
       },
 
       getSuccessStatus(){

@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import './plugins/vuetify'
 import App from './App.vue'
-import store from './storage'
-import router from './plugins/router'
+import store from './storage/index'
+import router from './plugins/router/router'
 import * as fireBase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
@@ -14,7 +14,7 @@ fireBase.initializeApp({
   projectId: 'vue-note-84b36',
   storageBucket: 'vue-note-84b36.appsot.com',
   messagingSenderId: '184897689684'
-})
+});
 export const db = fireBase.firestore()
 
 
@@ -26,6 +26,12 @@ new Vue({
   router,
   render: h => h(App),
   created(){
-
+    // auto login
+    fireBase.auth().onAuthStateChanged(user =>{
+      if (user){
+        this.$store.dispatch('autoLogin', user); // загружает инфу о логине
+        this.$store.dispatch('getRecordsFromServer'); // загружает данные с сервера при загрузке
+      }
+    })
   }
 }).$mount('#app')

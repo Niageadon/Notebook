@@ -59,6 +59,10 @@
         return this.$store.getters.ERRORMESSAGE
       },
 
+
+
+
+
       authenticationSuccess(){
         return this.$store.getters.SUCCESS
       }
@@ -75,4 +79,13 @@
 <style>
   .element::-webkit-scrollbar { width: 0 !important }
 
+  .noSelect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+  }
 </style>

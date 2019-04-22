@@ -1,5 +1,6 @@
 import  * as fireBase from 'firebase/app'
-
+import 'firebase/database'
+import userState from './user'
 
 export default {
 
@@ -12,7 +13,7 @@ export default {
       note:[],
       task:[],
       reminder:[],
-      medical:[]
+      med:[]
     },
 
 
@@ -57,6 +58,10 @@ export default {
       state.records[recordType].push(newRecord)
     },
 
+    setRecordsArray(state, payload){
+      state.records = payload;
+    },
+
     setCurrentRecordType(state, payload){
       state.currentRecordType = payload;
     },
@@ -84,13 +89,16 @@ export default {
       state.records[type][recordId].body = payload.body;
     },
 
+    setLoading(state, payload){
+      state.loading = payload;
+    },
   },
 
   actions: {
-    NewRecord({state, commit}, {recordType, newRecord}){
+    async NewRecord({state, commit}, {recordType, newRecord}){
       //console.log(recordType, newRecord);
+      commit('setCurrentRecordType', recordType);
       let recordNotNull = state.records[recordType].length;
-
       if (recordNotNull) // if not null
         commit('checkForDuplicate', {recordType, newRecord});
 
@@ -103,19 +111,82 @@ export default {
       {
         commit('addContentToRecord', {recordType, newRecord});
       }
+
+      let user = userState.state.user;
+      console.log(user)
+      console.log(newRecord)
+      const db = fireBase.firestore();
+      try
+      {
+        //console.log(newRecord)
+        await db.collection("users").doc(user).collection(state.currentRecordType)
+          .doc(newRecord.date).set(newRecord);
+
+      }
+      catch (e) {
+        throw e
+      }
     },
 
-    saveEditRecord({commit}, payload){
-      commit('setEditRecord', payload);
+    async saveEditRecord({commit}, payload){
+      //commit('setEditRecord', payload);
+
     },
 
     async sendRecordsToServer(){
-
+      /*try {
+      fireBase.database().ref('records').push
+      }*/
     },
 
     setCurrentRecordType({commit}, payload){
       // получаем текущий отображаемый тип запесей
       commit('setCurrentRecordType', payload)
+    },
+
+    async getRecordsFromServer({commit}){
+      //commit('setLoading', true);
+      let userID = userState.state.user;
+      const records = {};
+      const noteFB = fireBase.firestore().collection('users').doc(userID)
+        .collection('note');//.doc().collection('2019-04-19')//.doc('data');
+      const taskFB = fireBase.firestore().collection('users').doc(userID)
+        .collection('task');
+      const reminderFB = fireBase.firestore().collection('users').doc(userID)
+        .collection('reminder');
+      const medFB = fireBase.firestore().collection('users').doc(userID)
+        .collection('med');
+
+      try{
+        const note    = await noteFB.get()
+          .then(console.log('1'))
+        const task    = await taskFB.get()
+          .then(console.log('2'))
+
+        const reminder  = await reminderFB.get()
+          .then(console.log('3'))
+
+        const med     = await medFB.get()
+          .then(console.log('4'))
+
+        records['note']     = note.docs.map(doc => ({/*__id: doc.id, */...doc.data()}));
+        records['task']     = task.docs.map(doc => ({/*__id: doc.id, */...doc.data()}));
+        records['reminder']   = reminder.docs.map(doc => ({/*__id: doc.id, */...doc.data()}));
+        records['med']      = med.docs.map(doc => ({/*__id: doc.id, */...doc.data()}));
+        /*records.docs.forEach(doc => {
+          markers.push(doc.data());
+        })*/
+        commit('setRecordsArray', records);
+        commit('setLoading', false);
+
+        //commit
+
+      }
+      catch (e) {
+        commit('setLoading', false);
+        throw e;
+        //console.log(e)
+      }
     }
   }
 

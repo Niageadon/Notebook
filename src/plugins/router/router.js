@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import StartPage from '../views/StartPageTest'
-import LoginScreen from '../views/User/Authentication/Login'
-import RegistrationScreen from '../views/User/Authentication/Registration'
+import Guard from './auth-guard'
+import StartPage from '../../views/StartPage'
+import LoginScreen from '../../views/User/Authentication/Login'
+import RegistrationScreen from '../../views/User/Authentication/Registration'
 
 Vue.use(Router);
 

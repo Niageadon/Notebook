@@ -1,6 +1,8 @@
 export default {
   state: {
     drawer: false,
+    systemLoading: false,
+
   },
 
   mutations: {
@@ -12,7 +14,11 @@ export default {
   getters: {
     DRAWER: state =>{
       return state.drawer
-    }
+    },
+
+    SYSTEMLOADING: state =>{
+      return state.loading
+    },
 
   },
 

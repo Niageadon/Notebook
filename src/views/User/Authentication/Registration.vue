@@ -39,7 +39,7 @@
             <v-btn
                 :color="getStatusColor"
                 :disabled="!valid"
-                :loading="loading"
+                :loading="loadingUserInfo"
                 @click="doRegistration()">
               <v-icon v-if="getSuccessStatus" >done</v-icon>
               Registration
@@ -94,7 +94,7 @@
             setTimeout(() =>{
               this.$router.push('/Login');
               this.$store.dispatch('doneAuthentication');
-            },2000)
+            }, 1200)
           }
 
         }
@@ -118,8 +118,8 @@
         return this.$store.getters.USER
       },
 
-      loading(){
-        return this.$store.getters.LOADING
+      loadingUserInfo(){
+        return this.$store.getters.LOADINGUSERINFO
       },
 
       /*getErrorMessage(){

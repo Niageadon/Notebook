@@ -10,15 +10,15 @@ class User {
 export default {
   state: {
     user: null,
-    loading: false,
+    loadingUserInfo: false,
     success: false,  //успешный логин или регистрация
     errorMessage: '',
-    userIsAuthorized: false,
+
   },
 
   getters: {
-    LOADING: state =>{
-      return state.loading
+    LOADINGUSERINFO: state =>{
+      return state.loadingUserInfo
     },
     USER: state =>{
       return state.user
@@ -29,9 +29,10 @@ export default {
     SUCCESS: state =>{
       return state.success
     },
-    USERISAUTHORIZED: state =>{
-      return state.userIsAuthorized
-    }
+    isUserAuthorized: state =>{
+      return state.user !== null
+    },
+
 
   },
 
@@ -45,16 +46,14 @@ export default {
     },
 
     setLoading(state, payload){
-      state.loading = payload
+      state.loadingUserInfo = payload
     },
 
     setSuccess(state, payload){
       state.success = payload
     },
 
-    setAuthorizationStatus(state, payload){
-      state.userIsAuthorized = payload
-    }
+
 
   },
 
@@ -99,12 +98,11 @@ export default {
       commit('setLoading', true);
       commit('setSuccess', false);
       commit('setError', '');
-      commit('setAuthorizationStatus', false);
 
       try {
-        await fireBase.auth().signInWithEmailAndPassword(email, password);
+        const user = await fireBase.auth().signInWithEmailAndPassword(email, password);
         commit('setSuccess', true);
-        commit('setAuthorizationStatus', true)
+        commit('setUser', new User(user.user.uid));
       }
       catch (error){
         commit('setError', error.message);
@@ -120,6 +118,16 @@ export default {
 
     doneAuthentication({commit}){
       commit('setSuccess', false)
+    },
+
+    async logout({commit}){
+      await fireBase.auth().signOut()
+      setTimeout(() =>{
+        commit('setUser', null);}, 300)
+    },
+
+    autoLogin({commit}, payload){
+      commit('setUser', payload.uid)
     }
   }
 
