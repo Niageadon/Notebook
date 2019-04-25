@@ -10,6 +10,7 @@ class User {
 export default {
   state: {
     user: null,
+    userName: null,
     loadingUserInfo: false,
     success: false,  //успешный логин или регистрация
     errorMessage: '',
@@ -17,6 +18,10 @@ export default {
   },
 
   getters: {
+    USERNAME: state =>{
+      return state.userName
+    },
+
     LOADINGUSERINFO: state =>{
       return state.loadingUserInfo
     },
@@ -53,7 +58,9 @@ export default {
       state.success = payload
     },
 
-
+    setUserName(state, payload){
+      state.userName = payload
+    },
 
   },
 
@@ -80,6 +87,7 @@ export default {
         try {
           const user = await fireBase.auth().createUserWithEmailAndPassword(email, password);
           commit('setUser', new User(user.uid));
+          commit('setUserName', user.email)
           commit('setSuccess', true);
         }
         catch(error){
@@ -123,11 +131,14 @@ export default {
     async logout({commit}){
       await fireBase.auth().signOut()
       setTimeout(() =>{
-        commit('setUser', null);}, 300)
+        commit('setUser', null);
+        commit('setUserName', null)
+      }, 300)
     },
 
     autoLogin({commit}, payload){
       commit('setUser', payload.uid)
+      commit('setUserName', payload.email)
     }
   }
 

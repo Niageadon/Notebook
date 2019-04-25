@@ -8,6 +8,7 @@
     >
       <v-btn small round @click="changeDrawer"><v-icon >toc</v-icon> </v-btn>
       <div v-if="getLoadingStatus" class="lds-circle"><div></div></div>
+      <div>{{getUsername}}</div>
 
       <v-spacer/>
       <div class="hidden-sm-and-down" v-for="(link,i) in Links" :key="i">
@@ -111,6 +112,10 @@
 
       getLoadingStatus(){
         return this.$store.getters.SYSTEMLOADING
+      },
+
+      getUsername(){
+        return this.$store.getters.USERNAME
       }
     },
   }

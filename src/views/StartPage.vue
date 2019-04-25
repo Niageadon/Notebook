@@ -199,7 +199,6 @@
 
         ],
 
-
         validateRules:{
           valid: false,
           bodyRule: [

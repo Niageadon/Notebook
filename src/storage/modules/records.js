@@ -102,6 +102,7 @@ export default {
       if (recordNotNull) // if not null
         commit('checkForDuplicate', {recordType, newRecord});
 
+      //можно будет делать запрос по дате и по ответу определять дубликат ли
       if(state.duplicateId === -1)
       {// при отсутствии дубликата
         commit('addNewRecord', {recordType, newRecord});
@@ -147,7 +148,7 @@ export default {
     async getRecordsFromServer({commit}){
       //commit('setLoading', true);
       let userID = userState.state.user;
-      const records = {};
+      let records = {};
       const noteFB = fireBase.firestore().collection('users').doc(userID)
         .collection('note');//.doc().collection('2019-04-19')//.doc('data');
       const taskFB = fireBase.firestore().collection('users').doc(userID)
@@ -158,21 +159,15 @@ export default {
         .collection('med');
 
       try{
-        const note    = await noteFB.get()
-          .then(console.log('1'))
-        const task    = await taskFB.get()
-          .then(console.log('2'))
-
-        const reminder  = await reminderFB.get()
-          .then(console.log('3'))
-
-        const med     = await medFB.get()
-          .then(console.log('4'))
+        const note    = await noteFB.get();
+        const task    = await taskFB.get();
+        const reminder  = await reminderFB.get();
+        const med     = await medFB.get();
 
         records['note']     = note.docs.map(doc => ({/*__id: doc.id, */...doc.data()}));
-        records['task']     = task.docs.map(doc => ({/*__id: doc.id, */...doc.data()}));
-        records['reminder']   = reminder.docs.map(doc => ({/*__id: doc.id, */...doc.data()}));
-        records['med']      = med.docs.map(doc => ({/*__id: doc.id, */...doc.data()}));
+        records['task']     = task.docs.map(doc => ({...doc.data()}));
+        records['reminder']   = reminder.docs.map(doc => ({...doc.data()}));
+        records['med']      = med.docs.map(doc => ({...doc.data()}));
         /*records.docs.forEach(doc => {
           markers.push(doc.data());
         })*/
