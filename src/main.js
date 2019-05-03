@@ -6,6 +6,10 @@ import router from './plugins/router/router'
 import * as fireBase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
+import VueQuillEditor from 'vue-quill-editor'
+  import 'quill/dist/quill.core.css'
+  import 'quill/dist/quill.snow.css'
+  import 'quill/dist/quill.bubble.css'
 
 fireBase.initializeApp({
   apiKey: 'AIzaSyDxMmvwTIRr5m9au-3-_nAQnLGBtBKMwrY',
@@ -19,7 +23,7 @@ export const db = fireBase.firestore()
 
 
 Vue.config.productionTip = false;
-
+Vue.use(VueQuillEditor);
 
 new Vue({
   store,

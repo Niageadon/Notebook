@@ -6,9 +6,12 @@
     <v-container mt-4 fluid>
       <v-layout wrap xs12 justify-center>
         <v-flex xs12 md7>
-          <v-card class="elevation-13">
+          <v-card style="background-color: rgba(49,128,114,0.17)" class="elevation-13">
             <v-card-title>
               <v-layout wrap>
+
+
+
                 <v-flex  xs6 md4 >
                   <v-select
                       v-model="newNote.recordType"
@@ -44,11 +47,11 @@
                 >
                   <template v-slot:activator="{ on }">
                     <v-text-field
+                        class="mx-2"
                         v-model="newNote.date"
                         label="Set note date"
                         prepend-inner-icon="date_range"
                         readonly
-                        box
                         v-on="on"
                     ></v-text-field>
                   </template>
@@ -60,20 +63,25 @@
                 </v-menu><!--date-->
 
                 <v-text-field
+                    class="mx-2"
                     label="Headline"
                     prepend-inner-icon="title"
-                    box
                     v-model="newNote.title"
                 ></v-text-field><!--title-->
 
-                <v-textarea
+
+                  <quillEditor class="mx-2 mb-5" v-model="quillData" type="newRecord">
+                  </quillEditor>
+
+
+                <!--<v-textarea
                     v-on:keydown.tab="newNote.body = doTabulation(newNote.body,$event)"
                     box
                     name="input-7-4"
                     label="Main text"
                     v-model="newNote.body"
                     :rules="validateRules.bodyRule"
-                ></v-textarea><!--body-->
+                ></v-textarea>--><!--body-->
               </v-layout>
             </v-form>
 
@@ -86,7 +94,7 @@
                       :disabled="!validateRules.valid"
                       @click="addNote"
                       color="primary">
-                    Publish
+                      Publish
                     <v-icon class="ml-2">cloud_download</v-icon>
                   </v-btn>
                 </v-flex> <!--button-->
@@ -182,11 +190,20 @@
 
 <script>
 
+  import quillEditor from "./main/Records/Editor"
+
+
   export default {
     name: "StartPage",
 
+    components:{
+      quillEditor
+    },
+
     data(){
       return{
+
+        quillData: '1',
         //db: this.firebase.firestore(),
         recordOnEdition: false, //для v-dialog
         selectedRecordTypeToShow: 'note',
@@ -230,13 +247,13 @@
         //this.notes.push(this.newNote.note)
         let recordType = this.newNote.recordType.toLowerCase();
 
-        let newRecord = {
+        /*let newRecord = {
           date:         this.newNote.date,
           isImportant:  this.newNote.isImportant,
           title:        this.newNote.title,
           body:         this.newNote.body,
-        };
-        this.$store.dispatch('NewRecord', {recordType, newRecord})
+        };*/
+        this.$store.dispatch('NewRecord', recordType)
       },
 
       getCurrentDate(){
@@ -252,7 +269,9 @@
 
       doTabulation(text, event){
         event.preventDefault(); // disable tabulation
-        return text + '\u0009'  // add tab
+        console.log(this.quillData)
+        return text + '\u0009';  // add tab
+
       },
 
       /*      saveNotes() {

@@ -6,15 +6,13 @@ export default {
 
 
   state: {
-
+    writeDone: false,
+    record: '',
     duplicateId: -1,
     currentRecordType: 'note',
-    records:{
-      note:[],
-      task:[],
-      reminder:[],
-      med:[]
-    },
+    records:{note:[], task:[], reminder:[], med:[]},
+    existRecord:{},
+
 
 
 
@@ -24,6 +22,10 @@ export default {
     RECORDS: state =>{
       return state.records
     },
+
+    WRITEDONE: state =>{
+      return state.writeDone
+    }
 
 
 
@@ -92,18 +94,64 @@ export default {
     setLoading(state, payload){
       state.loading = payload;
     },
+
+    setExistRecord(state, payload){
+      state.existRecord = payload;
+    },
+
+    setWriteDone(state, payload){
+      state.writeDone = payload;
+    },
+
+    setRecord(state, payload){
+      state.record = payload;
+    },
   },
 
   actions: {
-    async NewRecord({state, commit}, {recordType, newRecord}){
-      //console.log(recordType, newRecord);
+    async NewRecord({state, commit}, recordType){
+      /////////////////////////////////////////////
+      // Проверяем наличие записи с текущей датой, делая запрос на сервер
+      //    | если нету, то заполняем данные и загружаем на сервер
+      //    | есть есть, то выгружаем имеющиеся данные, редактируем их и отправвляем на сервер обновлённую версию
+      /////////////////////////////////////////////
+
+      commit('setWriteDone', true);               //забираем данные из текстового редактора
+      const fb = fireBase.firestore();
+      const userID = userState.state.user;
+      let newRecord = {date:'2019-04-01'};
       commit('setCurrentRecordType', recordType);
-      let recordNotNull = state.records[recordType].length;
-      if (recordNotNull) // if not null
-        commit('checkForDuplicate', {recordType, newRecord});
+
+
+      // check for date duplicate
+      try
+      {
+      await fb.collection('users').doc(userID)
+        .collection(recordType).doc(newRecord.date).get()
+        .then( doc =>{
+          if(doc.exists){
+            commit('setExistRecord', doc.data());
+          }
+          else
+            {console.log('f')}
+        })
+      }
+        catch(e){
+        // system error: bad connection
+      }
+
+      //console.log(isRecordExist)
+
+      // check for duplicate
+      //const duplicate = await db.collection(recordType)
+      //console.log(duplicate);
+
+      //let recordNotNull = state.records[recordType].length;
+      //if (recordNotNull) // if not null
+      //  commit('checkForDuplicate', {recordType, newRecord});
 
       //можно будет делать запрос по дате и по ответу определять дубликат ли
-      if(state.duplicateId === -1)
+      /*if(state.duplicateId === -1)
       {// при отсутствии дубликата
         commit('addNewRecord', {recordType, newRecord});
         if (recordNotNull) commit('sortRecords', recordType);
@@ -111,16 +159,23 @@ export default {
       else
       {
         commit('addContentToRecord', {recordType, newRecord});
-      }
+      }*/
 
-      let user = userState.state.user;
-      console.log(user)
-      console.log(newRecord)
-      const db = fireBase.firestore();
+
+
+      //const isRecordExist = await fireBase.firestore().collection('users').doc(userID)
+      //  .collection(recordType).doc(newRecord.date).get();//.collection()//.doc('data');*/
+       //const isRecordExist = await fireBase.firestore().ref().get();//.collection()//.doc('data');
+
+     // console.log(isRecordExist);
+      //let user = userState.state.user;
+      //console.log(user)
+      //console.log(newRecord)
+
       try
       {
         //console.log(newRecord)
-        await db.collection("users").doc(user).collection(state.currentRecordType)
+        await fb.collection("users").doc(userID).collection(state.currentRecordType)
           .doc(newRecord.date).set(newRecord);
 
       }
@@ -131,8 +186,11 @@ export default {
 
     async saveEditRecord({commit}, payload){
       //commit('setEditRecord', payload);
-
     },
+
+    /*stopWrite({commit}){
+      commit('setWriteDone', true)
+    },*/
 
     async sendRecordsToServer(){
       /*try {
@@ -144,6 +202,11 @@ export default {
       // получаем текущий отображаемый тип запесей
       commit('setCurrentRecordType', payload)
     },
+
+    setRecord({commit}, payload){
+      commit('setRecord', payload)
+    },
+
 
     async getRecordsFromServer({commit}){
       //commit('setLoading', true);
@@ -159,10 +222,10 @@ export default {
         .collection('med');
 
       try{
-        const note    = await noteFB.get();
-        const task    = await taskFB.get();
+        const note      = await noteFB.get();
+        const task      = await taskFB.get();
         const reminder  = await reminderFB.get();
-        const med     = await medFB.get();
+        const med       = await medFB.get();
 
         records['note']     = note.docs.map(doc => ({/*__id: doc.id, */...doc.data()}));
         records['task']     = task.docs.map(doc => ({...doc.data()}));
