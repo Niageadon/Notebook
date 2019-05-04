@@ -109,19 +109,20 @@ export default {
   },
 
   actions: {
-    async NewRecord({state, commit}, recordType){
+
+    async NewRecord({state, commit}, {recordType, newRecord}){
       /////////////////////////////////////////////
       // Проверяем наличие записи с текущей датой, делая запрос на сервер
       //    | если нету, то заполняем данные и загружаем на сервер
       //    | есть есть, то выгружаем имеющиеся данные, редактируем их и отправвляем на сервер обновлённую версию
       /////////////////////////////////////////////
+      const fb = fireBase.firestore();
 
       commit('setWriteDone', true);               //забираем данные из текстового редактора
-      const fb = fireBase.firestore();
       const userID = userState.state.user;
-      let newRecord = {date:'2019-04-01'};
+      //let newRecord = {date:'2019-04-01'};
       commit('setCurrentRecordType', recordType);
-
+      let record = newRecord;
 
       // check for date duplicate
       try
@@ -129,14 +130,16 @@ export default {
       await fb.collection('users').doc(userID)
         .collection(recordType).doc(newRecord.date).get()
         .then( doc =>{
-          if(doc.exists){
+          if(doc.exists){                                 // при существовании записи для текущей даты
             commit('setExistRecord', doc.data());
+            //record = doc.data();
           }
-          else
-            {console.log('f')}
+          else {
+            return
+          }
         })
       }
-        catch(e){
+      catch(e){
         // system error: bad connection
       }
 
@@ -165,23 +168,27 @@ export default {
 
       //const isRecordExist = await fireBase.firestore().collection('users').doc(userID)
       //  .collection(recordType).doc(newRecord.date).get();//.collection()//.doc('data');*/
-       //const isRecordExist = await fireBase.firestore().ref().get();//.collection()//.doc('data');
+      //const isRecordExist = await fireBase.firestore().ref().get();//.collection()//.doc('data');
 
-     // console.log(isRecordExist);
+      // console.log(isRecordExist);
       //let user = userState.state.user;
       //console.log(user)
       //console.log(newRecord)
-
+      if(state.record === ''){throw "body is empty"}
+      record.body = state.record;
       try
       {
         //console.log(newRecord)
         await fb.collection("users").doc(userID).collection(state.currentRecordType)
-          .doc(newRecord.date).set(newRecord);
+          .doc(record.date).set(record);
 
       }
       catch (e) {
         throw e
       }
+
+      commit('setWriteDone', false);
+
     },
 
     async saveEditRecord({commit}, payload){

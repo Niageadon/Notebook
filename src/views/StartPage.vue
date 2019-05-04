@@ -130,18 +130,14 @@
     <v-container>
       <v-layout wrap justify-center>
         <v-flex mt-4 pb-4 xs12 md11 v-for="note in getRecord[selectedRecordTypeToShow]" :key="note.date">
-          <div >
+          <div>
             <div style="text-align: center" class="font-weight-black display-1 font-italic">{{note.date}}</div>
             <v-card class="elevation-10">
               <v-card-title class="headline grey lighten-2 font-weight-bold">{{note.title}}</v-card-title>
               <v-divider></v-divider>
               <v-card-text class="title">
-                <v-textarea v-model="note.body"
-                            readonly
-                            flat
-                            auto-grow
-                >
-                </v-textarea>
+                <div v-html="note.body">
+                </div>
               </v-card-text>
               <!--<v-responsive>
                 <v-img  src="https://cdn.vuetifyjs.com/images/carousel/sky.jpg"> </v-img>
@@ -247,13 +243,13 @@
         //this.notes.push(this.newNote.note)
         let recordType = this.newNote.recordType.toLowerCase();
 
-        /*let newRecord = {
+        let newRecord = {
           date:         this.newNote.date,
           isImportant:  this.newNote.isImportant,
           title:        this.newNote.title,
-          body:         this.newNote.body,
-        };*/
-        this.$store.dispatch('NewRecord', recordType)
+          //body:         this.newNote.body,
+        };
+        this.$store.dispatch('NewRecord', {recordType, newRecord})
       },
 
       getCurrentDate(){

@@ -45,7 +45,7 @@
 
       onEditorBlur(quill) {
         //console.log('editor blur!', quill)
-        console.log(this.recordType)
+        //console.log(this.recordType)
       },
       onEditorFocus(quill) {
         //console.log('editor focus!', quill)
@@ -72,7 +72,7 @@
 
     watch:{
       writeDone(){
-        console.log(this.writeDone)
+        //console.log(this.writeDone)
         if(this.writeDone) {
           this.$store.dispatch('setRecord', this.content)
         }
