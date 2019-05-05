@@ -11,14 +11,8 @@ import VueQuillEditor from 'vue-quill-editor'
   import 'quill/dist/quill.snow.css'
   import 'quill/dist/quill.bubble.css'
 
-fireBase.initializeApp({
-  apiKey: 'AIzaSyDxMmvwTIRr5m9au-3-_nAQnLGBtBKMwrY',
-  authDomain: 'vue-note-84b36.firebaseapp.com',
-  databaseURL: 'https://vue-note-84b36.firebaseapp.com',
-  projectId: 'vue-note-84b36',
-  storageBucket: 'vue-note-84b36.appsot.com',
-  messagingSenderId: '184897689684'
-});
+import firebaseInit from '@/options/FirebaseInit'
+fireBase.initializeApp(firebaseInit);
 export const db = fireBase.firestore()
 
 

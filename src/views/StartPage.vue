@@ -9,9 +9,6 @@
           <v-card style="background-color: rgba(49,128,114,0.17)" class="elevation-13">
             <v-card-title>
               <v-layout wrap>
-
-
-
                 <v-flex  xs6 md4 >
                   <v-select
                       v-model="newNote.recordType"
@@ -70,7 +67,7 @@
                 ></v-text-field><!--title-->
 
 
-                  <quillEditor class="mx-2 mb-5" v-model="quillData" type="newRecord">
+                  <quillEditor class="mx-2 mb-5" v-model="quillData">
                   </quillEditor>
 
 
@@ -131,13 +128,11 @@
       <v-layout wrap justify-center>
         <v-flex mt-4 pb-4 xs12 md11 v-for="note in getRecord[selectedRecordTypeToShow]" :key="note.date">
           <div>
-            <div style="text-align: center" class="font-weight-black display-1 font-italic">{{note.date}}</div>
             <v-card class="elevation-10">
-              <v-card-title class="headline grey lighten-2 font-weight-bold">{{note.title}}</v-card-title>
+              <v-card-title  class="headline  lighten-2 font-weight-bold" v-bind:class="{important: note.isImportant}">{{note.date}}</v-card-title>
               <v-divider></v-divider>
               <v-card-text class="title">
-                <div v-html="note.body">
-                </div>
+                <div v-html="note.body"></div>
               </v-card-text>
               <!--<v-responsive>
                 <v-img  src="https://cdn.vuetifyjs.com/images/carousel/sky.jpg"> </v-img>
@@ -159,17 +154,15 @@
                     <v-card-title>hey</v-card-title>
                     <v-divider/>
                     <v-card-text>
-                      <v-text-field
-                          label="Headline"
-                          prepend-inner-icon="title"
-                          v-model="editedRecord.title"
-                      ></v-text-field>
-                      <v-textarea
+                      <quillEditor class="mx-2 mb-5" v-model="quillData" editRecord="gg">
+                      </quillEditor>
+
+                      <!--<v-textarea
                           v-on:keydown.tab="editedRecord.body = doTabulation(editedRecord.body,$event)"
                           auto-grow
                           box
                           v-model="editedRecord.body">
-                      </v-textarea>
+                      </v-textarea>-->
                     </v-card-text>
                     <v-card-actions> <v-btn @click="saveEditChanges(note.i)" >Save changing</v-btn> </v-card-actions>
                   </v-card>
@@ -223,7 +216,6 @@
           dateMenu: false,
           recordType: 'note',
           date: '',
-          title: '',
           body: '',
           isImportant: false,
         },
@@ -231,7 +223,6 @@
         editedRecord:{
           recordType: '',
           date: '',
-          title: '',
           body: '',
         },
 
@@ -246,7 +237,6 @@
         let newRecord = {
           date:         this.newNote.date,
           isImportant:  this.newNote.isImportant,
-          title:        this.newNote.title,
           //body:         this.newNote.body,
         };
         this.$store.dispatch('NewRecord', {recordType, newRecord})
@@ -265,7 +255,6 @@
 
       doTabulation(text, event){
         event.preventDefault(); // disable tabulation
-        console.log(this.quillData)
         return text + '\u0009';  // add tab
 
       },
@@ -286,7 +275,8 @@
       editRecord(date){
         let recordId = this.findArrayIndexByDate(date);
         //this.editedRecord = this.getRecord[this.selectedRecordTypeToShow][recordId];
-        let record = this.getRecord[this.selectedRecordTypeToShow][recordId]
+        let record = this.getRecord[this.selectedRecordTypeToShow][date];
+        console.log(record)
         this.editedRecord.recordType  = this.selectedRecordTypeToShow;
         this.editedRecord.date        = record.date;
         this.editedRecord.title       = record.title;
@@ -318,13 +308,13 @@
     mounted(){
       this.newNote.date = this.getCurrentDate(); //get date for auto-write to v-date field
 
-      if (localStorage.getItem('records')) {
+      /*if (localStorage.getItem('records')) {
         try {
           this.records = JSON.parse(localStorage.getItem('records'));
         } catch(e) {
           localStorage.removeItem('records');
         }
-      }
+      }*/
     },
 
     watch: {
@@ -340,6 +330,10 @@
 <style scoped>
   .autoH{
     height: auto;
+  }
+
+  .important{
+    background-color: red;
   }
 
 

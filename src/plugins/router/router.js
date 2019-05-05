@@ -8,24 +8,15 @@ import RegistrationScreen from '../../views/User/Authentication/Registration'
 Vue.use(Router);
 
 export default new Router({
+  mode: 'history', // убирает /#
   routes: [
-    {
-      path: '/',
-      name: 'Home',
-      component: StartPage
+    { path: '/', name: 'Home', component: StartPage},
+
+    { path: '/Login', name: 'Login', component: LoginScreen,
+      children: []
     },
 
-    {
-      path: '/Login',
-      name: 'Login',
-      component: LoginScreen
-    },
-
-    {
-      path: '/Registration',
-      name: 'Registration',
-      component: RegistrationScreen
-    },
+    { path: '/Registration', name: 'Registration', component: RegistrationScreen},
 
 
   ]

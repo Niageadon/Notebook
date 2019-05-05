@@ -4,8 +4,8 @@ export default {
     toolbar: {
       container: [
         ['bold', 'italic', 'underline', 'strike'], // toggled buttons
-        ['blockquote', 'code-block'],
-        [{ align: '' }, { align: 'center' }, { align: 'right' }],
+        ['blockquote'],
+        //[{ align: '' }, { align: 'center' }, { align: 'right' }],
 
         //[{ header: 1 }, { header: 2 }], // custom button values
         [{ list: 'ordered' }, { list: 'bullet' }],

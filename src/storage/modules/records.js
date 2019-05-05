@@ -10,11 +10,8 @@ export default {
     record: '',
     duplicateId: -1,
     currentRecordType: 'note',
-    records:{note:[], task:[], reminder:[], med:[]},
+    records: {note:[], task:[], reminder:[], med:[]},
     existRecord:{},
-
-
-
 
   },
 
@@ -22,12 +19,6 @@ export default {
     RECORDS: state =>{
       return state.records
     },
-
-    WRITEDONE: state =>{
-      return state.writeDone
-    }
-
-
 
   },
 
@@ -86,7 +77,6 @@ export default {
       let recordId = payload.recordId;
       let type = state.currentRecordType;
         // при изменении типа записи if(!(payload.recordType === state.currentRecordType)){};
-      state.records[type][recordId].title = payload.title;
       state.records[type][recordId].date = payload.date;
       state.records[type][recordId].body = payload.body;
     },
@@ -106,6 +96,7 @@ export default {
     setRecord(state, payload){
       state.record = payload;
     },
+
   },
 
   actions: {
@@ -117,25 +108,29 @@ export default {
       //    | есть есть, то выгружаем имеющиеся данные, редактируем их и отправвляем на сервер обновлённую версию
       /////////////////////////////////////////////
       const fb = fireBase.firestore();
-
-      commit('setWriteDone', true);               //забираем данные из текстового редактора
+      //commit('setWriteDone', true);               //забираем данные из текстового редактора
       const userID = userState.state.user;
       //let newRecord = {date:'2019-04-01'};
       commit('setCurrentRecordType', recordType);
       let record = newRecord;
-
+      let test = {};
+      record.body = state.record;
       // check for date duplicate
+
+      let duplicate = false;
       try
       {
-      await fb.collection('users').doc(userID)
+      await fb.collection('users').doc(userID).collection('records').doc('data')
         .collection(recordType).doc(newRecord.date).get()
         .then( doc =>{
-          if(doc.exists){                                 // при существовании записи для текущей даты
-            commit('setExistRecord', doc.data());
-            //record = doc.data();
+          if(doc.exists){                                       // при существовании записи для текущей даты
+            //commit('setExistRecord', doc.data());
+            duplicate = true;
+            record.body = doc.data().body + '<br>' + record.body;   // дополняем имеющийся текст
+            record.isImportant = record.isImportant || doc.data().isImportant;
           }
           else {
-            return
+            throw 'network error'
           }
         })
       }
@@ -143,6 +138,7 @@ export default {
         // system error: bad connection
       }
 
+      //console.log(record);
       //console.log(isRecordExist)
 
       // check for duplicate
@@ -175,19 +171,36 @@ export default {
       //console.log(user)
       //console.log(newRecord)
       if(state.record === ''){throw "body is empty"}
-      record.body = state.record;
+
       try
       {
         //console.log(newRecord)
-        await fb.collection("users").doc(userID).collection(state.currentRecordType)
-          .doc(record.date).set(record);
+        await fb.collection("users").doc(userID).collection('records').doc('data')
+          .collection(state.currentRecordType).doc(record.date).set(record);
 
       }
       catch (e) {
         throw e
       }
 
-      commit('setWriteDone', false);
+      if(duplicate){
+        // если был дубликат, то забираем с сервера обновленную запись
+        try
+        {
+          await fb.collection("users").doc(userID).collection('records').doc('data')
+            .collection(state.currentRecordType).doc(record.date).get()
+          .then((doc) => {
+            //state.records[recordType][record.date].body = doc.data().body;
+            console.log(doc);
+            console.log(state.records[recordType])
+          })
+        }
+        catch (e){
+          throw e
+        }
+      }
+
+      //commit('setWriteDone', false);
 
     },
 
@@ -195,52 +208,54 @@ export default {
       //commit('setEditRecord', payload);
     },
 
-    /*stopWrite({commit}){
-      commit('setWriteDone', true)
-    },*/
-
-    async sendRecordsToServer(){
-      /*try {
-      fireBase.database().ref('records').push
-      }*/
-    },
-
     setCurrentRecordType({commit}, payload){
       // получаем текущий отображаемый тип запесей
       commit('setCurrentRecordType', payload)
     },
 
-    setRecord({commit}, payload){
+    writeRecord({commit}, payload){
       commit('setRecord', payload)
     },
-
 
     async getRecordsFromServer({commit}){
       //commit('setLoading', true);
       let userID = userState.state.user;
-      let records = {};
-      const noteFB = fireBase.firestore().collection('users').doc(userID)
-        .collection('note');//.doc().collection('2019-04-19')//.doc('data');
-      const taskFB = fireBase.firestore().collection('users').doc(userID)
-        .collection('task');
-      const reminderFB = fireBase.firestore().collection('users').doc(userID)
-        .collection('reminder');
-      const medFB = fireBase.firestore().collection('users').doc(userID)
-        .collection('med');
+      let records = {note:{}, task:{}, reminder:{}, med:{}};
+      const noteFB = fireBase.firestore().collection('users').doc(userID).collection('records')
+        .doc('data').collection('note');//.doc().collection('2019-04-19')//.doc('data');
+      const taskFB = fireBase.firestore().collection('users').doc(userID).collection('records')
+        .doc('data').collection('task');
+      const reminderFB = fireBase.firestore().collection('users').doc(userID).collection('records')
+        .doc('data').collection('reminder');
+      const medFB = fireBase.firestore().collection('users').doc(userID).collection('records')
+        .doc('data').collection('med');
 
       try{
+        // Получаем данные с FB
         const note      = await noteFB.get();
         const task      = await taskFB.get();
         const reminder  = await reminderFB.get();
         const med       = await medFB.get();
 
-        records['note']     = note.docs.map(doc => ({/*__id: doc.id, */...doc.data()}));
-        records['task']     = task.docs.map(doc => ({...doc.data()}));
-        records['reminder']   = reminder.docs.map(doc => ({...doc.data()}));
-        records['med']      = med.docs.map(doc => ({...doc.data()}));
-        /*records.docs.forEach(doc => {
-          markers.push(doc.data());
-        })*/
+        // Заполняем объект данными
+        // Загрузка идёт с конца, для упрощения последующей сортировки
+        const arrNote  = note.docs.map(doc => ({/*__id: doc.id, */...doc.data()}));
+        for(let i = arrNote.length - 1; i > -1; i--) {
+          records.note[arrNote[i].date] = arrNote[i]
+        }
+        const arrTasks = task.docs.map(doc => ({...doc.data()}));
+        for(let i = arrTasks.length - 1; i > -1; i--) {
+          records.task[arrTasks[i].date] = arrTasks[i]
+        }
+        const arrRem = reminder.docs.map(doc => ({...doc.data()}));
+        for(let i = arrRem.length - 1; i > -1; i--) {
+          records.reminder[arrRem[i].date] = arrRem[i]
+        }
+        const arrMed = med.docs.map(doc => ({...doc.data()}));
+        for(let i = arrMed.length - 1; i > -1; i--) {
+          records.med[arrMed[i].date] = arrMed[i]
+        }
+
         commit('setRecordsArray', records);
         commit('setLoading', false);
 

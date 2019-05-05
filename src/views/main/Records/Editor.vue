@@ -30,12 +30,12 @@
   import editorOptions from "@/views/main/Records/editor-options"
 
   export default {
-    props:['type'], // newRecord || editRecord
+    props:['editRecord'], // newRecord || editRecord
 
     data () {
       return {
         editorOptions,
-        content: '',
+        content: this.editRecord? this.editRecord.body : '',
       }
     },
     // manually control the data synchronization
@@ -63,24 +63,28 @@
         return this.$refs.myQuillEditor.quill
       },
 
-      writeDone(){
+/*      writeDone(){
         return this.$store.getters.WRITEDONE
-      }
+      }*/
 
 
     },
 
     watch:{
-      writeDone(){
+/*      writeDone(){
         //console.log(this.writeDone)
         if(this.writeDone) {
           this.$store.dispatch('setRecord', this.content)
         }
+      },*/
+      content(){
+        this.$store.dispatch('writeRecord', this.content)
       }
     },
 
-    mounted() {
+    created() {
       //console.log('this is current quill instance object', this.editor)
+
     }
   }
 </script>
