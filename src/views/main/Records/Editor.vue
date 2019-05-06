@@ -30,7 +30,7 @@
   import editorOptions from "@/views/main/Records/editor-options"
 
   export default {
-    props:['editRecord'], // newRecord || editRecord
+    props:['newRecord', 'editRecord'], // newRecord || editRecord
 
     data () {
       return {
@@ -78,7 +78,8 @@
         }
       },*/
       content(){
-        this.$store.dispatch('writeRecord', this.content)
+        if(this.newRecord) this.$store.dispatch('writeRecord', this.content)
+        else console.log(this.editRecord)
       }
     },
 

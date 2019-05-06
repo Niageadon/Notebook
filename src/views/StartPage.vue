@@ -1,6 +1,12 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <div>
 
+    <div>
+      <v-dialog>
+      <quillEditor v-model="editedRecord.enable" class="mx-2 mb-5"  newRecord="false" :editRecord="editedRecord">
+      </quillEditor>
+      </v-dialog>
+    </div>
     <!--:style="{ background: `rgb(${red}, ${green}, ${blue})` }"-->
 
     <v-container mt-4 fluid>
@@ -67,7 +73,7 @@
                 ></v-text-field><!--title-->
 
 
-                  <quillEditor class="mx-2 mb-5" v-model="quillData">
+                  <quillEditor class="mx-2 mb-5" newRecord="true">
                   </quillEditor>
 
 
@@ -117,60 +123,60 @@
             </v-flex>
           </v-layout>
         </v-flex>
-
-
-
-
       </v-layout>
     </v-container> <!--New note-->
 
     <v-container>
       <v-layout wrap justify-center>
         <v-flex mt-4 pb-4 xs12 md11 v-for="note in getRecord[selectedRecordTypeToShow]" :key="note.date">
-          <div>
-            <v-card class="elevation-10">
-              <v-card-title  class="headline  lighten-2 font-weight-bold" v-bind:class="{important: note.isImportant}">{{note.date}}</v-card-title>
-              <v-divider></v-divider>
-              <v-card-text class="title">
-                <div v-html="note.body"></div>
-              </v-card-text>
-              <!--<v-responsive>
-                <v-img  src="https://cdn.vuetifyjs.com/images/carousel/sky.jpg"> </v-img>
-              </v-responsive>-->
-              <v-card-actions>
-                <v-dialog v-model="recordOnEdition">
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                        @click="editRecord(note.date)"
-                        color="red lighten-2"
-                        dark
-                        v-on="on"
-                    >
-                      Редактировать запись
-                    </v-btn>
-                  </template>
+          <v-stepper v-model="note.step">
 
-                  <v-card class="elevation-24">
-                    <v-card-title>hey</v-card-title>
-                    <v-divider/>
-                    <v-card-text>
-                      <quillEditor class="mx-2 mb-5" v-model="quillData" editRecord="gg">
-                      </quillEditor>
+            <v-stepper-items>
+              <v-stepper-content step="1">
+                <v-card class="elevation-10">
+                <v-card-title  class="headline  lighten-2 font-weight-bold" v-bind:class="{important: note.isImportant}">{{note.date}}</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text class="title">
+                  <div v-html="note.body"></div>
+                </v-card-text>
+                <!--<v-responsive>
+                  <v-img  src="https://cdn.vuetifyjs.com/images/carousel/sky.jpg"> </v-img>
+                </v-responsive>-->
+                <v-card-actions>
 
-                      <!--<v-textarea
-                          v-on:keydown.tab="editedRecord.body = doTabulation(editedRecord.body,$event)"
-                          auto-grow
-                          box
-                          v-model="editedRecord.body">
-                      </v-textarea>-->
-                    </v-card-text>
-                    <v-card-actions> <v-btn @click="saveEditChanges(note.i)" >Save changing</v-btn> </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </v-card-actions>
-            </v-card>
-          </div>
+                  <v-btn
+                      @click="editRecord(note.date); note.step = 2"
+                      color="red lighten-2"
+                      dark
+                  >
+                    Редактировать запись
+                  </v-btn>
 
+                </v-card-actions>
+              </v-card>
+              </v-stepper-content>
+            <!--content-->
+
+              <v-stepper-content step="2">
+                <v-card class="elevation-24">
+                  <v-card-title>hey</v-card-title>
+                  <v-divider/>
+
+                    <quillEditor v-model="editedRecord.enable" class="py-2 px-2"  newRecord="false" :editRecord="note">
+                    </quillEditor>
+
+                    <!--<v-textarea
+                        v-on:keydown.tab="editedRecord.body = doTabulation(editedRecord.body,$event)"
+                        auto-grow
+                        box
+                        v-model="editedRecord.body">
+                    </v-textarea>-->
+
+                  <v-card-actions> <v-btn @click="saveEditChanges(note.i); note.step = 1" >Save changing</v-btn> </v-card-actions>
+                </v-card>
+              </v-stepper-content>
+            </v-stepper-items> <!--edit-->
+          </v-stepper>
         </v-flex>
       </v-layout>
     </v-container> <!--Note's array-->
@@ -192,7 +198,7 @@
     data(){
       return{
 
-        quillData: '1',
+        quillData: 'bobi',
         //db: this.firebase.firestore(),
         recordOnEdition: false, //для v-dialog
         selectedRecordTypeToShow: 'note',
@@ -237,6 +243,7 @@
         let newRecord = {
           date:         this.newNote.date,
           isImportant:  this.newNote.isImportant,
+          step: 1
           //body:         this.newNote.body,
         };
         this.$store.dispatch('NewRecord', {recordType, newRecord})
@@ -281,6 +288,7 @@
         this.editedRecord.date        = record.date;
         this.editedRecord.title       = record.title;
         this.editedRecord.body        = record.body;
+        this.editedRecord.enable = true;
       },
 
       saveEditChanges(){
@@ -293,7 +301,8 @@
 
     computed:{
       getRecord(){
-        return this.$store.getters.RECORDS;
+        let record = this.$store.getters.RECORDS;
+        return record;
       },
 
       getTypesArray(){
