@@ -65,12 +65,7 @@
                   </v-date-picker>
                 </v-menu><!--date-->
 
-                <v-text-field
-                    class="mx-2"
-                    label="Headline"
-                    prepend-inner-icon="title"
-                    v-model="newNote.title"
-                ></v-text-field><!--title-->
+
 
 
                   <quillEditor class="mx-2 mb-5" newRecord="true">
@@ -129,12 +124,16 @@
     <v-container>
       <v-layout wrap justify-center>
         <v-flex mt-4 pb-4 xs12 md11 v-for="note in getRecord[selectedRecordTypeToShow]" :key="note.date">
-          <v-stepper v-model="note.step">
+          <v-stepper  v-model="note.step">
 
-            <v-stepper-items>
-              <v-stepper-content step="1">
+            <v-stepper-items >
+              <v-stepper-content class="pa-0" step="1">
                 <v-card class="elevation-10">
-                <v-card-title  class="headline  lighten-2 font-weight-bold" v-bind:class="{important: note.isImportant}">{{note.date}}</v-card-title>
+                  <v-card-title
+                      class="headline lighten-2 font-weight-bold"
+                      v-bind:class="{important: note.isImportant, usial: !note.isImportant}">
+                    {{note.date}}
+                  </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text class="title">
                   <div v-html="note.body"></div>
@@ -145,37 +144,30 @@
                 <v-card-actions>
 
                   <v-btn
-                      @click="editRecord(note.date); note.step = 2"
+                      @click="editRecord(note); note.step = 2"
                       color="red lighten-2"
-                      dark
-                  >
+                      dark>
                     Редактировать запись
                   </v-btn>
 
                 </v-card-actions>
               </v-card>
               </v-stepper-content>
-            <!--content-->
-
-              <v-stepper-content step="2">
+              <!--content-->
+              <v-stepper-content class="pa-0" step="2">
                 <v-card class="elevation-24">
-                  <v-card-title>hey</v-card-title>
-                  <v-divider/>
+                  <v-card-title class="px-2">
 
-                    <quillEditor v-model="editedRecord.enable" class="py-2 px-2"  newRecord="false" :editRecord="note">
+                  </v-card-title>
+                    <quillEditor v-model="editedRecord.enable" class="px-2"  newRecord="false" :editRecord="note">
                     </quillEditor>
-
-                    <!--<v-textarea
-                        v-on:keydown.tab="editedRecord.body = doTabulation(editedRecord.body,$event)"
-                        auto-grow
-                        box
-                        v-model="editedRecord.body">
-                    </v-textarea>-->
-
-                  <v-card-actions> <v-btn @click="saveEditChanges(note.i); note.step = 1" >Save changing</v-btn> </v-card-actions>
+                  <v-card-actions>
+                    <v-btn class="mt-3" @click="saveEditChanges(note.i); note.step = 1" >Save changing</v-btn>
+                  </v-card-actions>
                 </v-card>
               </v-stepper-content>
-            </v-stepper-items> <!--edit-->
+              <!--edit-->
+            </v-stepper-items>
           </v-stepper>
         </v-flex>
       </v-layout>
@@ -279,16 +271,16 @@
         return -1
       },
 
-      editRecord(date){
-        let recordId = this.findArrayIndexByDate(date);
+      editRecord(record){
+        this.editedRecord = record;
         //this.editedRecord = this.getRecord[this.selectedRecordTypeToShow][recordId];
-        let record = this.getRecord[this.selectedRecordTypeToShow][date];
+        /*let record = this.getRecord[this.selectedRecordTypeToShow][date];
         console.log(record)
         this.editedRecord.recordType  = this.selectedRecordTypeToShow;
         this.editedRecord.date        = record.date;
         this.editedRecord.title       = record.title;
         this.editedRecord.body        = record.body;
-        this.editedRecord.enable = true;
+        this.editedRecord.enable = true;*/
       },
 
       saveEditChanges(){
@@ -343,6 +335,9 @@
 
   .important{
     background-color: red;
+  }
+  .usial{
+    background-color: #4652db;
   }
 
 

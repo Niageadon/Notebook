@@ -1,22 +1,20 @@
 <template>
   <div class="content">
-    <types></types>
+    <v-layout wrap xs12>
+      <v-flex xs3 v-for="(content, i) in contentTypes" :key="i">
+      <div class="element"></div>
+      </v-flex>
+    </v-layout>
   </div>
 </template>
 
 <script>
-
-  import types from "../components/noteType"
   export default {
-    name: "Test",
-
-    components:{
-      types
-    },
+    name: "noteType",
 
     data(){
       return{
-
+      contentTypes:['Note', 'Task', 'Reminder', 'Med']
       }
     },
 
@@ -25,7 +23,7 @@
 
 <style scoped>
   .content{
-    max-width: 100px;
+
   }
 
   .element{
