@@ -3,8 +3,6 @@ import 'firebase/database'
 import userState from './user'
 
 export default {
-
-
   state: {
     writeDone: false,
     record: '',
@@ -12,9 +10,7 @@ export default {
     currentRecordType: 'note',
     records: {note:[], task:[], reminder:[], med:[]},
     existRecord:{},
-
   },
-
   getters: {
     RECORDS: state =>{
       return state.records
@@ -130,9 +126,9 @@ export default {
             record.isImportant = record.isImportant || doc.data().isImportant;
           }
           else {
-            throw 'network error'
+            throw 'network error';
           }
-        })
+        });
       }
       catch(e){
         // system error: bad connection
